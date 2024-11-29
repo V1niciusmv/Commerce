@@ -1,0 +1,102 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.container-header { 
+    background-color: rgb(37, 37, 37);
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 30px;
+    align-items: center;
+}
+
+.logo-header img {
+    width: 80px;
+}
+
+.links-header{
+    display: flex;
+    align-items: center;
+    gap: 100px;
+}
+
+.font-header{
+    color: white;
+}
+
+.search {
+    position: relative;
+}
+.search input{
+    width: 500px;
+    padding: 12px;
+    border-radius: 13px;
+    cursor: pointer;
+}
+
+.search i {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: black;
+}
+
+.link-header-home {
+    width: 250px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.cart, .notification, .profile{
+    cursor: pointer;
+    font-size: 20px;
+    color: white
+}
+
+.profile i {
+    position: relative;
+    z-index: 10;
+}
+
+.dropdown { 
+    position: absolute;
+    width: 150px;
+    height: 300px;
+    right: 0;
+    background-color:rgb(37, 37, 37);
+    border-radius: 10px;
+    opacity: 0; 
+    visibility: hidden; 
+    transform: translateY(-20px); /* Começa fora de vista, acima */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Animação de opacidade e movimento */
+}
+
+.dropdown.show{
+    opacity: 1;
+    visibility: visible;
+    transform: translate(0);
+}
+
+ul {
+    padding: 0;
+    width: 100%;
+    
+}
+
+.dropdown li {
+    cursor: pointer;
+    color: white;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 25px;
+    padding-top: 30px;
+    font-size: 16px;
+}
+
+.dropdown a{
+    text-decoration: none;
+    color: white;
+}
+

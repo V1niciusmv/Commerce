@@ -1,0 +1,25 @@
+* {
+    margin : 0;
+    padding: 0;
+ }
+
+ .container-products-full {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+ }
+
+ .div1-products {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.div2-products{
+   width: 600px;
+ }
+
+ .div2-products .quantity{
+  
+ }
