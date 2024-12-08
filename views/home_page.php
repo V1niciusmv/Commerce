@@ -1,8 +1,11 @@
 <?php
-if(isset($_SESSION['user_id'])){
+session_start();
+
+if(!isset($_SESSION['user_id'])){
     header('location: register_page.php?action=login');
     exit();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

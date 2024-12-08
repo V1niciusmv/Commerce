@@ -1,6 +1,5 @@
 <?php
-session_start();
-require '../bd/connection.php';
+require_once '../bd/connection.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
