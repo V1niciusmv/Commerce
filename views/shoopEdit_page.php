@@ -2,13 +2,12 @@
 session_start();
 require '../bd/connection.php';
 
-
 if (!isset($_SESSION['user_id'])) {
     header('location: register_page.php?action=login');
     exit();
 }
 $sql = "SELECT loja.*, imagens.caminho_img FROM loja LEFT JOIN imagens ON loja.id_loja = lojas_id_loja
-        WHERE users_id_users = :user_id";
+        WHERE loja.users_id_users = :user_id";
 $stmt = $connection->prepare($sql);
 $stmt->bindParam(':user_id', $_SESSION['user_id']);
 $stmt->execute();
@@ -31,26 +30,65 @@ if ($stmt->rowCount() > 0) {
     <?php include('header_page.php'); ?>
     <div class="container-shooop-full">
         <div class="form-shoop">
-            <form action="../shoop.php" method="POST" enctype="multipart/form-data">
-                <?php if (isset($loja)) ?>
-                <img src="../<?= ($loja['caminho_img']); ?>">
+            <form action="../shoopEdit.php" method="POST" enctype="multipart/form-data">
+                <?php if (isset($loja)) : ?>
+                <?php if (isset($_SESSION['editLoja_sucesso'])) {
+                    echo '<p class="">' . $_SESSION['editLoja_sucesso'] . '</p>';
+                    unset($_SESSION['editLoja_sucesso']);
+                } ?>
+                <?php if (isset($_SESSION['restrincao_criarLoja'])) {
+                    echo '<p class="">' . $_SESSION['restrincao_criarLoja'] . '</p>';
+                    unset($_SESSION['restrincao_criarLoja']);
+                } ?>
+                 <?php if (isset($_SESSION['loja_nao_editada'])) {
+                    echo '<p class="">' . $_SESSION['loja_nao_editada'] . '</p>';
+                    unset($_SESSION['loja_nao_editada']);
+                } ?>
+                 <?php if (isset($_SESSION['Erro no envio de imagem'])) {
+                    echo '<p class="">' . $_SESSION['Erro no envio de imagem'] . '</p>';
+                    unset($_SESSION['Erro no envio de imagem']);
+                } ?>
+                <div>
+                    <img id="imagem-loja" src="../<?= ($loja['caminho_img']); ?>">
+                    <input type="file" name="imagem" accept="image/*" style="display :none" id="id-input-img"> 
+                    <i class="bx bx-camera" id="id-icon"></i>
+                </div>
                 <div class="">
                 </div>
                 <div class="">
+                    <?php if (isset($_SESSION['nomeLojaUsado'])) {
+                        echo '<p class="">' . $_SESSION['nomeLojaUsado'] . '</p>';
+                        unset($_SESSION['nomeLojaUsado']);
+                    } ?>
+                    <input type="hidden" name="id_loja" value="<?= $loja['id_loja'] ?>">
+
                     <label> Nome da loja: </label>
                     <input type="text" name="nome" value="<?= $loja['nome_loja'] ?>" required>
                 </div>
+                <span id="erros"></span>
                 <div class="">
+                    <?php if (isset($_SESSION['telefoneUsado'])) {
+                        echo '<p class="">' . $_SESSION['telefoneUsado'] . '</p>';
+                        unset($_SESSION['telefoneUsado']);
+                    } ?>
                     <label> Telefone: </label>
-                    <input type="text" name="telefone" id="telefone-id" value="<?= $loja['telefone_loja'] ?>" required>
+                    <input type="text" name="telefone" id="telefone-id" maxlength="15"
+                        value="<?= $loja['telefone_loja'] ?>" required>
                 </div>
+                <span id="errosCnpj"></span>
                 <div class="">
+                    <?php if (isset($_SESSION['cnpjUsado'])) {
+                        echo '<p class="">' . $_SESSION['cnpjUsado'] . '</p>';
+                        unset($_SESSION['cnpjUsado']);
+                    } ?>
                     <label> CNPJ: </label>
-                    <input type="text" name="cnpj" id="cnpj-id" value="<?= $loja['cnpj_loja'] ?>" required>
+                    <input type="text" name="cnpj" id="cnpj-id" maxlength="18" value="<?= $loja['cnpj_loja'] ?>"
+                        required>
                 </div>
                 <div>
-                    <button submit="editar_loja"> Editar </button>
+                    <button type="submit" name="editar_loja" id="submit-form"> Editar </button>
                 </div>
+                <?php endif ?>
         </div>
     </div>
     <script>
@@ -62,6 +100,21 @@ if ($stmt->rowCount() > 0) {
         }
         document.getElementById('telefone-id').addEventListener('input', function (e) {
             e.target.value = applyMaskPhone(e.target.value);
+
+            const password = e.target.value.replace(/\D/g, '');
+            const errors = document.getElementById('erros');
+            const button = document.getElementById('submit-form');
+
+            if (password.length < 11) {
+                if (password.length === 0) {
+                    errors.innerHTML = '';
+                } else {
+                    errors.innerHTML = 'É necessario ter 14 números';
+                }
+            } else {
+                errors.innerHTML = '';
+            }
+            toggleButtonState();
         });
 
         function applyMaskCnpj(cnpj) {
@@ -74,8 +127,53 @@ if ($stmt->rowCount() > 0) {
         }
         document.getElementById('cnpj-id').addEventListener('input', function (e) {
             e.target.value = applyMaskCnpj(e.target.value);
+
+            const cnpj = e.target.value.replace(/\D/g, '');
+            const erros = document.getElementById('errosCnpj');
+            const button = document.getElementById('submit-form');
+
+            if (cnpj.length < 14) {
+                if (cnpj.length === 0) {
+                    erros.innerHTML = '';
+                } else {
+                    erros.innerHTML = 'O CNPJ tem que ter 14 digitos';
+                }
+            } else {
+                erros.innerHTML = '';
+            }
+
+            toggleButtonState();
         });
+
+        function toggleButtonState() {
+            const phone = document.getElementById('telefone-id').value.replace(/\D/g, '');
+            const cnpj = document.getElementById('cnpj-id').value.replace(/\D/g, '');
+            const button = document.getElementById('submit-form');
+
+            if (phone.length === 11 && cnpj.length === 14) {
+                button.disabled = false;
+            } else {
+                button.disabled = true;
+            }
+        }
+            const img = document.getElementById('imagem-loja');
+            const input = document.getElementById('id-input-img');
+            const icon = document.getElementById('id-icon');
+
+            icon.addEventListener('click', () => {
+                input.click();
+            });
+
+            input.addEventListener('change', (event) => {
+    const file = event.target.files[0]; // Obtém o arquivo selecionado
+    if (file) {
+        const reader = new FileReader(); // Cria um leitor de arquivos
+        reader.onload = function (e) {
+            img.src = e.target.result; // Atualiza a imagem mostrada
+        };
+        reader.readAsDataURL(file); // Lê o arquivo como uma URL local
+    }
+});
     </script>
 </body>
-
 </html>

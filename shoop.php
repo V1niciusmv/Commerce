@@ -6,14 +6,9 @@ $nomeLoja = $_POST['nome'];
 $telefoneLoja = $_POST['telefone'];
 $cnpjLoja = $_POST['cnpj'];
 
-if (empty($nomeLoja) || empty($telefoneLoja) || empty($cnpjLoja)) {
+if ((empty($nomeLoja) || empty($telefoneLoja) || empty($cnpjLoja)) || (!isset($_FILES['imagem']) 
+|| $_FILES['imagem']['error'] !== UPLOAD_ERR_OK)) {
     $_SESSION['restrincao_criarLoja'] = "Preencha todos os campos";
-    header("location: views/shoop_page.php?telefone=$telefoneLoja&nome=$nomeLoja&cnpj=$cnpjLoja");
-    exit();
-}
-
-if (!isset($_FILES['imagem']) || $_FILES['imagem']['error'] !== UPLOAD_ERR_OK) {
-    $_SESSION['restricao_criarLoja'] = "Erro no envio de imagem";
     header("location: views/shoop_page.php?telefone=$telefoneLoja&nome=$nomeLoja&cnpj=$cnpjLoja");
     exit();
 }
@@ -89,7 +84,7 @@ try {
     $tipoImg = 'loja';
 
     $sqlImg = "INSERT INTO imagens (tipo_img, caminho_img, lojas_id_loja) 
-        VALUEs (:tipo_img, :caminho_img, :lojas_id_loja)";
+        VALUES (:tipo_img, :caminho_img, :lojas_id_loja)";
     $stmtImg = $connection->prepare($sqlImg);
     $stmtImg->bindParam(':tipo_img', $tipoImg);
     $stmtImg->bindParam(':caminho_img', $urlImagem);
