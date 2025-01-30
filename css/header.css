@@ -100,3 +100,9 @@ ul {
     color: white;
 }
 
+.bx-chevron-left{
+ font-size: 40px;
+ cursor: pointer;
+ color: white;
+}
+

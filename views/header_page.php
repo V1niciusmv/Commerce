@@ -11,7 +11,16 @@ require_once '../bd/connection.php';
 </head>
 <bod>
   <div class="container-header">
-    <div class="logo-header"> <img src="/img/logo.png" alt=""></div>
+    <div class="logo-header">
+  <?php
+   $pages = basename($_SERVER['PHP_SELF']);
+  if (in_array($pages, ['home_page.php', 'welcome_page.php', 'register_page.php'])) {
+    echo '<img src="/img/logo.png" alt="Logo">';
+  } else {
+    echo '<i class="bx bx-chevron-left" style="color:white" onclick="window.history.back()"></i>';
+  }
+  ?>
+    </div>
     <?php if (!isset($_SESSION['user_id'])): ?>
       <div class="links-header">
         <div class="font-header" onclick="window.location.href='/views/register_page.php?action=register'"> Cadastre-se
@@ -36,7 +45,7 @@ require_once '../bd/connection.php';
           <ul>
             <li> Meu perfil </li>
             <li> <a href="shoop_page.php"> Loja </a></li>
-            <li> Produtos </li>
+            <li> <a href="product_page.php">  Produtos </li>
             <li> <a href="../logout.php"> Encerrar sessão </a></li>
           </ul>
         </div>
