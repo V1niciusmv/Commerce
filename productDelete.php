@@ -28,7 +28,7 @@ if (isset($_POST['deletar_produto'])) {
     $stmtProduto->execute();
 
     $_SESSION['produto_deletado'] ="Produto deletado com sucesso";
-    header ('location: ../views/product_page.php');
+    header ('location: views/product_page.php');
     exit();
 }
 ?>

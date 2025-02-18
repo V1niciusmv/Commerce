@@ -123,4 +123,3 @@ if (isset($_POST['editar_loja'])) {
         echo "Erro ao realizar edição da loja: " . $e->getMessage();
     }
 }
-?>

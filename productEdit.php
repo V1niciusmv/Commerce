@@ -13,8 +13,13 @@ if (isset($_POST['editar_produto'])) {
 
     if (empty($nomeProduto)  || empty($categoriaProduto) || empty($valorProduto) || empty($estoqueProduto) || empty($descricaoProduto)) {
         $_SESSION['restrincao_editarLoja'] = "Preencha todos os campos";
-        header("location: views/productEdit_page.php");
+        header("location: views/productEdit_page.php?&nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
         exit();
+}
+if ($estoqueProduto > 1000) {
+    $_SESSION['ValorEstoqueGrande'] = "È permitido apenas 1.000 no estoque";
+    header("location: views/productEdit_page.php?nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
+    exit();
 }
 
     $sqlTodosProdut = "SELECT products.nome_products, products.valor_products, products.descricao_products, products.estoque_products, 
@@ -34,7 +39,7 @@ if (isset($_POST['editar_produto'])) {
     $resultProdut['descricao_products'] === $descricaoProduto &&
     (!isset($_FILES['imagem']) || $_FILES['imagem']['error'] !== UPLOAD_ERR_OK)){
     $_SESSION['nenhuma_alteracao'] = "Nenhuma alteração detectada.";
-    header('location: views/productEdit_page.php');
+    header("location: views/productEdit_page.php?nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
     exit();
 }
     try {
@@ -56,7 +61,7 @@ if (isset($_POST['editar_produto'])) {
 
     if($resultNomeUsado > 0) {
     $_SESSION['nomeProdutoUsado'] = "O nome do produto ja esta em uso na sua loja";
-    header ('location: views/productEdit_page.php');
+    header ("location: views/productEdit_page.php?nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
     exit();
     }
 
@@ -103,7 +108,7 @@ if (isset($_POST['editar_produto'])) {
 
         if (!move_uploaded_file($imagem['tmp_name'], $caminhoUpload)) {
             $_SESSION['restrincao_imgProduto'] = "Erro ao salvar imagem";
-            header('location: views/productEdit_page.php');
+            header("location: views/productEdit_page.php?nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
             exit();
         }
 
@@ -119,7 +124,7 @@ if (isset($_POST['editar_produto'])) {
         $stmtImg->execute();
 
     $_SESSION['atualizarProdutoSucesso'] = "Produto atualizado";
-    header('location: views/productEdit_page.php');
+    header("location: views/productEdit_page.php");
     exit();
 }catch (PDOException $e) {
     echo "Erro ao realizar edição da loja: " . $e->getMessage();

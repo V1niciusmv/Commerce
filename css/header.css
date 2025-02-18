@@ -1,18 +1,20 @@
 body {
     padding: 0;
     margin: 0;
+    width: 100%;
 }
 
 .container-header { 
-    background-color: rgb(37, 37, 37);
+    max-width: 100%;
+    background-color: #E49502;
     display: flex;
     justify-content: space-between;
-    padding: 20px 30px;
+    padding: 20px;
     align-items: center;
 }
 
 .logo-header img {
-    width: 80px;
+    width: 60px;
 }
 
 .links-header{
@@ -26,26 +28,32 @@ body {
 }
 
 .search {
+    width: 35%;
     position: relative;
+    margin-left: 10%;
 }
 .search input{
-    width: 500px;
+    width:100%;
     padding: 12px;
     border-radius: 13px;
     cursor: pointer;
+    outline: none;
+    border: none;
 }
 
 .search i {
     position: absolute;
     right: 10px;
-    top: 10px;
-    color: black;
+    top: 12px;
+    color: #8D6100;
 }
 
 .link-header-home {
-    width: 250px;
+   width: 15%;
+   min-width: 121px;
     display: flex;
-    justify-content: space-around;
+    gap: 10px;
+    justify-content: space-between;
 }
 
 .cart, .notification, .profile{
@@ -64,12 +72,13 @@ body {
     width: 150px;
     height: 300px;
     right: 0;
-    background-color:rgb(37, 37, 37);
+    background-color:#E49502;
     border-radius: 10px;
     opacity: 0; 
     visibility: hidden; 
     transform: translateY(-20px); /* Começa fora de vista, acima */
     transition: opacity 0.3s ease, transform 0.3s ease; /* Animação de opacidade e movimento */
+    z-index: 1000;
 }
 
 .dropdown.show{

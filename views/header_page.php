@@ -1,25 +1,39 @@
 <?php
 require_once '../bd/connection.php';
+
+$rotas = [
+    'home_page.php' => null,
+    'product_page.php' => 'home_page.php',
+    'productEdit_page.php' => 'product_page.php',
+    'shoop_page.php' => 'home_page.php',
+    'shoopEdiit_page.php' => 'shoop_page.php',
+];
+
+$paginaAtual = basename($_SERVER['PHP_SELF']);
+
+$destino = isset($rotas[$paginaAtual]) ? $rotas[$paginaAtual] : 'home_page.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/header.css">
   <title>header</title>
 </head>
-<bod>
+<body>
   <div class="container-header">
     <div class="logo-header">
-  <?php
-   $pages = basename($_SERVER['PHP_SELF']);
-  if (in_array($pages, ['home_page.php', 'welcome_page.php', 'register_page.php'])) {
-    echo '<img src="/img/logo.png" alt="Logo">';
-  } else {
-    echo '<i class="bx bx-chevron-left" style="color:white" onclick="window.history.back()"></i>';
-  }
-  ?>
+      <?php
+      $pages = basename($_SERVER['PHP_SELF']);
+      if (in_array($pages, ['home_page.php', 'welcome_page.php', 'register_page.php'])) {
+        echo '<img src="/img/logo.webp" alt="Logo">';
+      } else {
+        echo "<i class='bx bx-chevron-left' onclick='window.location.href=\"$destino\"'></i>";
+      }
+      ?>
     </div>
     <?php if (!isset($_SESSION['user_id'])): ?>
       <div class="links-header">
@@ -42,30 +56,30 @@ require_once '../bd/connection.php';
         <div class="profile" onclick="dropDown()">
           <i class='bx bx-user'></i>
           <div class="dropdown" id="id-dropdown" onclick="stopPropagation()">
-          <ul>
-            <li> Meu perfil </li>
-            <li> <a href="shoop_page.php"> Loja </a></li>
-            <li> <a href="product_page.php">  Produtos </li>
-            <li> <a href="../logout.php"> Encerrar sessão </a></li>
-          </ul>
-        </div>
+            <ul>
+              <li> Meu perfil </li>
+              <li> <a href="shoop_page.php"> Loja </a></li>
+              <li> <a href="product_page.php"> Produtos </li>
+              <li> <a href="../logout.php"> Encerrar sessão </a></li>
+            </ul>
+          </div>
         </div>
       </div>
     <?php endif ?>
   </div>
   <script>
-    function dropDown(){
-      const modal =document.getElementById('id-dropdown');
+    function dropDown() {
+      const modal = document.getElementById('id-dropdown');
 
-      if (modal.classList.contains('show')){
+      if (modal.classList.contains('show')) {
         modal.classList.remove('show');
-      }else {
-       modal.classList.add('show');
+      } else {
+        modal.classList.add('show');
       }
     }
-    document.getElementById('id-dropdown').addEventListener('click', function(event) {
-  event.stopPropagation();
-});
+    document.getElementById('id-dropdown').addEventListener('click', function (event) {
+      event.stopPropagation();
+    });
   </script>
   </body>
 </html>

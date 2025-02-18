@@ -7,26 +7,28 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['produto'])) {
+    $_SESSION['id_produto'] = $_POST['produto']; 
+}
+
 $sql = "SELECT products.*, imagens.caminho_img, loja.id_loja, category.id_category, category.nome_category
 FROM products
 LEFT JOIN imagens ON products.id_products = produtos_id_products 
 LEFT JOIN loja ON products.loja_id_loja= id_loja
 LEFT JOIN category ON products.category_id_category = id_category 
-WHERE products.users_id_users = :user_id";
+WHERE products.users_id_users = :user_id AND products.id_products = :id_produto";
 
 $stmt = $connection->prepare($sql);
 $stmt->bindParam(':user_id', $_SESSION['user_id']);
+$stmt->bindParam(':id_produto', $_SESSION['id_produto']);
 $stmt->execute();
 
 if ($stmt->rowCount() > 0) {
     $produto = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    var_dump($produto);
-}
+} 
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,48 +36,53 @@ if ($stmt->rowCount() > 0) {
     <link rel="stylesheet" href="/css/product.css">
     <title>produtos</title>
 </head>
-
 <body>
     <?php include('header_page.php'); ?>
-    <div class="container-product-full">
-        <h4> Seus produtos </h4>
-        <div class="show-products">
-            <?php if (isset($_SESSION['atualizarProdutoSucesso'])) {
-                echo '<p class="">' . $_SESSION['atualizarProdutoSucesso'] . '</p>';
+    <div class="container-product-edit">
+        <h3> Edite seus produtos </h3>
+    <div class="sessionsMensage">
+        <?php if (isset($_SESSION['atualizarProdutoSucesso'])) {
+                echo '<p class="sessionGreen">' . $_SESSION['atualizarProdutoSucesso'] . '</p>';
                 unset($_SESSION['atualizarProdutoSucesso']);
             } ?>
             <?php if (isset($_SESSION['nomeProdutoUsado'])) {
-                echo '<p class="">' . $_SESSION['nomeProdutoUsado'] . '</p>';
+                echo '<p class="sessionRed">' . $_SESSION['nomeProdutoUsado'] . '</p>';
                 unset($_SESSION['nomeProdutoUsado']);
             } ?>
             <?php if (isset($_SESSION['restrincao_editarLoja'])) {
-                echo '<p class="">' . $_SESSION['restrincao_editarLoja'] . '</p>';
+                echo '<p class="sessionRed">' . $_SESSION['restrincao_editarLoja'] . '</p>';
                 unset($_SESSION['restrincao_editarLoja']);
             } ?>
             <?php if (isset($_SESSION['restrincao_imgProduto'])) {
-                echo '<p class="">' . $_SESSION['restrincao_imgProduto'] . '</p>';
+                echo '<p class="sessionRed">' . $_SESSION['restrincao_imgProduto'] . '</p>';
                 unset($_SESSION['restrincao_imgProduto']);
             } ?>
             <?php if (isset($_SESSION['nenhuma_alteracao'])) {
-                echo '<p class="">' . $_SESSION['nenhuma_alteracao'] . '</p>';
+                echo '<p class="sessionRed ">' . $_SESSION['nenhuma_alteracao'] . '</p>';
                 unset($_SESSION['nenhuma_alteracao']);
             } ?>
+             <?php if (isset($_SESSION['ValorEstoqueGrande'])) {
+                echo '<p class="sessionRed">' . $_SESSION['ValorEstoqueGrande'] . '</p>';
+                unset($_SESSION['ValorEstoqueGrande']);
+            } ?>
+            </div>
             <form action="../productEdit.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="id_product" value="<?= $produto['id_products'] ?>">
-
-                <div>
-                    <img style="width: 90px" id="img-produto" src="../<?= $produto['caminho_img'] ?>">
+            
+                <div class="div1">
+                    <img id="img-produto" src="../<?= $produto['caminho_img'] ?>">
                     <input type="file" accept="image/*" name="imagem" id="input-img-produto" style="display:none">
                     <i class="bx bx-camera" id="id-icon"></i>
                 </div>
-
-                <div class="">
+        <div class="div2"> 
+            <div class="nomeCat">
+                <div class="resultados-div">
                     <label> Nome do produto</label>
                     <input type="text" name="nome" value="<?= $produto['nome_products'] ?>" required>
                 </div>
-                <div class="">
+                <div class="resultados-div-cat">
                     <label>Categoria</label>
-                        <select name="categoria" required>
+                        <select name="categoria" id="categoriia" required>
                             <option value="1" <?= ($produto['nome_category'] == '1') ? 'selected' : '' ?>> Eletrônicos</option>
                             <option value="2" <?= ($produto['nome_category'] == '2') ? 'selected' : '' ?>>Comidas
                             </option>
@@ -113,24 +120,30 @@ if ($stmt->rowCount() > 0) {
                                 Informática</option>
                         </select>
                 </div>
-                <div class="">
-                    <label> Valor :</label>
+            </div>
+            <div class="valorQuant">
+                <div class="resultados-div">
+                    <label> Valor</label>
                     <i id="less" class='bx bx-minus'></i>
                     <input type="number" id="input" name="valor" value="<?= $produto['valor_products'] ?>" required>
                     <i id="more" class='bx bx-plus'></i>
                 </div>
-                <div class="">
-                    <label> Quantidade :</label>
+                <div class="resultados-div">
+                    <label> Quantidade</label>
                     <input type="number" name="estoque" value="<?= $produto['estoque_products'] ?>" required>
                 </div>
-                <div class="">
+            </div>
+                <div class="descri-edit">
                     <label> Descrição </label>
                     <textarea id="descricao" name="descricao" rows="5" cols="40" placeholder="Digite a descrição do produto">
-                    <?= htmlspecialchars(trim($produto['descricao_products'])) ?></textarea>
+                    <?= htmlspecialchars(trim($produto['descricao_products'])) ?>
+                    </textarea>
                 </div>
+            <div class="btn-edit">
                 <button type="submit" name="editar_produto"> Salvar </button>
-            </form>
+            </div>
         </div>
+            </form>
     </div>
     <script>
         const moreIcon = document.getElementById("more");
@@ -145,6 +158,7 @@ if ($stmt->rowCount() > 0) {
             input.value = Math.max(0, parseInt(input.value || 0) - 1);
         });
 
+        document.addEventListener("DOMContentLoaded", function () {
         const categorias = {
             1: "Eletrônicos",
             2: "Comidas",
@@ -165,8 +179,9 @@ if ($stmt->rowCount() > 0) {
             17: "Higiene",
             18: "Informática"
         };
+    });
 
-        const inputCategoria = document.querySelector('selectd[name="categoria"]');
+        const inputCategoria = document.querySelector('#categoriia');
         const categoriaId = inputCategoria.value;
 
         if (categorias[categoriaId]) {

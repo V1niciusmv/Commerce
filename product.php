@@ -12,11 +12,30 @@ if (isset($_POST['adicionar_produto'])) {
 
     if ((empty($nomeProduto))  || (empty($categoriaProduto)) || (empty($valorProduto)) || (empty($estoqueProduto)) || (empty($descricaoProduto)) || (!isset($_FILES['imagem']) 
     || $_FILES['imagem']['error'] !== UPLOAD_ERR_OK)) {
-        $_SESSION['restrincao_criarLoja'] = "Preencha todos os campos";
+        $_SESSION['restrincao_criarProduto'] = "Preencha todos os campos";
         header("location: views/product_page.php?nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
         exit();
 }
+    if ($estoqueProduto > 1000) {
+        $_SESSION['ValorEstoqueGrande'] = 'È permitido apenas 1.000 no estoque';
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit();
+    }
+
 try {
+    $sql = "SELECT COUNT(*) FROM products WHERE nome_products = :nome_produto AND users_id_users = :user_id";
+    $stmt = $connection->prepare($sql);
+    $stmt->bindParam(':nome_produto', $nomeProduto);
+    $stmt->bindParam(':user_id', $userId);
+    $stmt->execute();
+
+    $verificarNome = $stmt->fetchColumn();
+    if($verificarNome > 0) {
+        $_SESSION['nomeUtilizado'] = 'Você ja tem um produto com esse nome cadastrado';
+        header ('location: views/product_page.php');
+        exit();
+    }
+
     $sqlLoja = "SELECT id_loja FROM loja WHERE users_id_users = :id_user";
     $stmtLoja = $connection->prepare($sqlLoja);
     $stmtLoja->bindParam(':id_user', $_SESSION['user_id']);
@@ -67,12 +86,12 @@ try {
     $stmtImg->bindParam(':caminho_img', $urlImagem);
     $stmtImg->bindParam(':produtos_id_products', $idProduto);
     $stmtImg->execute();
-
+    
     $_SESSION['cadastroProduto_sucesso'] = "Produto criado com sucesso";
     header('location: views/product_page.php');
     exit();
 } catch (PDOException $e) {
-    echo "Erro ao realizar cadastro da loja: " . $e->getMessage();
+    echo "Erro ao realizar cadastro do produto: " . $e->getMessage();
 }
 }
 ?>

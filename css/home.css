@@ -14,12 +14,14 @@ padding-bottom: 30px;
 }
 
 .first h1 {
-    padding-left: 21px;
+    margin-left: 50px;
+    color: #8D6100;
 }
 
 .first i {
     padding-right: 30px;
     font-size: 20px;
     cursor: pointer;
+    color: #8D6100;
 }
 
