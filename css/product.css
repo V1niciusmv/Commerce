@@ -439,8 +439,8 @@ margin-left: 380px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   margin: 20px;
-  border-radius: 5px;
 }
 
 .div1 img {
@@ -448,15 +448,14 @@ margin-left: 380px;
   height: 70%;
   object-fit: cover;
   border-radius: 4px;
-  padding: 4px;
-  background-color: #3C3B3B;
+  border: 2px solid #3C3B3B;
 }
 
 .div1 .bx-camera {
-  font-size: 35px;
+  font-size: 30px;
   cursor: pointer;
   margin-top: 25px;
-  color: #8D6100;
+  color: #3C3B3B;
 }
 
 .div2 {
@@ -513,7 +512,6 @@ margin-left: 380px;
   }
 .container-product-edit h3 {
   text-align: center;
-  padding: 0px;
   padding: 20px 0px 10px 0px;
 }
 

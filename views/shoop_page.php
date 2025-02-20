@@ -22,95 +22,118 @@ if ($stmt->rowCount() > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/shoop.css">
     <title>Loja</title>
 </head>
 
 <body>
     <?php include('header_page.php'); ?>
-    <div class="container-shooop-full">
-        <div class="form-shoop">
-                <?php if (isset($loja)): ?>
-                    <?php if (isset($_SESSION['cadastroLoja_sucesso'])) {
-                        echo '<p class="">' . $_SESSION['cadastroLoja_sucesso'] . '</p>';
-                        unset($_SESSION['cadastroLoja_sucesso']);
-                    } ?>
-                    <img src="../<?= ($loja['caminho_img']); ?>">
-                    <div class="">
-                    </div>
-                    <div class="">
-                        <label> Nome da loja: </label>
-                        <input type="text" name="nome" value="<?= $loja['nome_loja'] ?>" readonly required>
-                    </div>
-                    <div class="">
-                        <label> Telefone: </label>
-                        <input type="text" name="telefone" value="<?= $loja['telefone_loja'] ?>" readonly required>
-                    </div>
-                    <div class="">
-                        <label> CNPJ: </label>
-                        <input type="text" name="cnpj" id="cnpj-id" value="<?= $loja['cnpj_loja'] ?>" readonly required>
-                    </div>
+    <div class="container-shoop-full">
+        <h1> Sua loja</h1>
+        <?php if (isset($loja)): ?>
+            <?php if (isset($_SESSION['cadastroLoja_sucesso'])) {
+                echo '<p class="green">' . $_SESSION['cadastroLoja_sucesso'] . '</p>';
+                unset($_SESSION['cadastroLoja_sucesso']);
+            }
+            if (isset($_SESSION['produto_apagar'])) {
+                echo '<p class="red">' . $_SESSION['produto_apagar'] . '</p>';
+                unset($_SESSION['produto_apagar']);
+            } ?>
+        <div class="div-exibicao">
+            <div class="div1">
+                <img src="../<?= ($loja['caminho_img']); ?>">
+                <label> Logo da loja </label>
+            </div>
+        <div class="div2">
+            <div class="exib-register">
+                <label> Nome da loja: </label>
+                <input type="text" name="nome" value="<?= $loja['nome_loja'] ?>" readonly required>
+            </div>
+            <div class="exib-register">
+                <label> Telefone: </label>
+                <input type="text" name="telefone" value="<?= $loja['telefone_loja'] ?>" readonly required>
+            </div>
+            <div class="exib-register">
+                <label> CNPJ: </label>
+                <input type="text" name="cnpj" id="cnpj-id" value="<?= $loja['cnpj_loja'] ?>" readonly required>
+            </div>
+        </div>
+        </div>
+        <div class="btn-exib">
+    <div class="btn1">
+        <button type="button" onclick="window.location.href='shoopEdit_page.php'"> Editar  <i class='bx bx-pencil'></i></button>
+    </div>
 
-                    <button type="button" onclick="window.location.href='shoopEdit_page.php'"> Editar </button>
+    <form action="../shoopDelete.php" method="POST">
+        <input type="hidden" name="id_loja" value="<?= $loja['id_loja'] ?>">
+        <button type="submit" name="deletar_loja"> Deletar loja <i class='bx bx-trash'></i></button>
+    </form>
+</div>
 
-                    <form action="../shoopDelete.php" method="POST" style="display : inline">
-                        <input type="hidden" name="id_loja" value="<?= $loja['id_loja'] ?>">
-                        <button type=submit name="deletar_loja"> Deletar loja </button>
-                        </input>
-                    </form>
         <?php else: ?>
+            <h2> Cadastre sua Loja </h2>
             <form action="../shoop.php" method="POST" enctype="multipart/form-data">
-            <div class="">
+                <div class="sessionRegister">
                 <?php
-                if (isset($_SESSION['nomeLojaUsado'])) {
-                    echo '<p class="">' . $_SESSION['nomeLojaUsado'] . '</p>';
-                    unset($_SESSION['nomeLojaUsado']);
-                }
                 if (isset($_SESSION['restrincao_criarLoja'])) {
-                    echo '<p class="">' . $_SESSION['restrincao_criarLoja'] . '</p>';
+                    echo '<p class="red">' . $_SESSION['restrincao_criarLoja'] . '</p>';
                     unset($_SESSION['restrincao_criarLoja']);
                 }
                 if (isset($_SESSION['loja_deletada'])) {
-                    echo '<p class="">' . $_SESSION['loja_deletada'] . '</p>';
+                    echo '<p class="red">' . $_SESSION['loja_deletada'] . '</p>';
                     unset($_SESSION['loja_deletada']);
-                }
-                ?>
-                <label> Nome da loja: </label>
-                <input type="text" name="nome" value="<?= $_GET['nome'] ?? '' ?>" required>
-            </div>
-            <span id="erros"></span>
-            <div class="">
-                <?php
-                if (isset($_SESSION['telefoneUsado'])) {
-                    echo '<p class="">' . $_SESSION['telefoneUsado'] . '</p>';
-                    unset($_SESSION['telefoneUsado']);
-                }
-                ?>
-                <label> Telefone: </label>
-                <input type="text" name="telefone" maxlength="15" id="telefone-id" value="<?= $_GET['telefone'] ?? '' ?>"
-                    required>
-            </div>
-            <span id="errosCnpj"> </span>
-            <div class="">
-                <?php
-                if (isset($_SESSION['cnpjUsado'])) {
-                    echo '<p class="">' . $_SESSION['cnpjUsado'] . '</p>';
-                    unset($_SESSION['cnpjUsado']);
-                }
-                ?>
-                <label> CNPJ: </label>
-                <input type="text" name="cnpj" id="cnpj-id" pattern="{18}" value="<?= $_GET['cnpj'] ?? '' ?>" maxlength="18"
-                    required>
-            </div>
-            <div class="">
-                <label> Adicione uma imagem para sua loja: </label>
-                <input type="file" name="imagem" accept="image/*">
-            </div>
-            <div class="">
-                <button type="submit" id="submit-form" name="cadastrar_loja" disabled> Criar loja </a>
-            </div>
+                } ?>
+                    </div>
+                <div class="input-register">
+                    <div class="result-register">
+                        <?php
+                        if (isset($_SESSION['nomeLojaUsado'])) {
+                            echo '<p class="red">' . $_SESSION['nomeLojaUsado'] . '</p>';
+                            unset($_SESSION['nomeLojaUsado']);
+                        } ?>
+                        <label> Nome da loja: </label>
+                        <input type="text" name="nome" value="<?= $_GET['nome'] ?? '' ?>" required>
+                    </div>
+                    <span id="erros"></span>
+                    <div class="result-register">
+                        <?php
+                        if (isset($_SESSION['telefoneUsado'])) {
+                            echo '<p class="red">' . $_SESSION['telefoneUsado'] . '</p>';
+                            unset($_SESSION['telefoneUsado']);
+                        }
+                        ?>
+                        <label> Telefone: </label>
+                        <input type="text" name="telefone" maxlength="15" id="telefone-id"
+                            value="<?= $_GET['telefone'] ?? '' ?>" required>
+                    </div>
+                </div>
+                <div class="input-register">
+                    <div class="result-register">
+                        <?php
+                        if (isset($_SESSION['cnpjUsado'])) {
+                            echo '<p class="red">' . $_SESSION['cnpjUsado'] . '</p>';
+                            unset($_SESSION['cnpjUsado']);
+                        }
+                        ?>
+                        <span id="errosCnpj"></span>
+                        <label> CNPJ: </label>
+                        <input type="text" name="cnpj" id="cnpj-id" pattern="{18}" value="<?= $_GET['cnpj'] ?? '' ?>"
+                            maxlength="18" required>
+                    </div>
+                    <div class="result-register-img">
+                        <input type="file" id="idimg" name="imagem" accept="image/*">
+                        <label for="idimg">
+                            <i class='bx bx-camera'></i>
+                            Adicione uma imagem
+                        </label>
+                        <span id="file-name" class="file-name">Nenhum arquivo escolhido</span>
+                    </div>
+                </div>
+                <div class="btn-register">
+                    <button type="submit" id="submit-form" name="cadastrar_loja" disabled> Criar loja </a>
+                </div>
             </form>
         <?php endif ?>
-    </div>
     </div>
     <script>
         function applyMaskPhone(phone) {
@@ -177,7 +200,12 @@ if ($stmt->rowCount() > 0) {
                 button.disabled = true;
             }
         }
-        window.onload =toggleButtonState;
+        window.onload = toggleButtonState;
+
+        document.getElementById("idimg").addEventListener("change", function () {
+        let fileName = this.files.length > 0 ? this.files[0].name : "Nenhum arquivo escolhido";
+        document.getElementById("file-name").textContent = fileName;
+    });
     </script>
 </body>
 

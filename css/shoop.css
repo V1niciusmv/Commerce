@@ -1,0 +1,425 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+}
+
+/* Criação da loja */
+.container-shoop-full {
+ width: 100%;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+}
+
+.container-shoop-full h2{
+    padding-top: 20px;
+    color: #8D6100;
+}
+
+.container-shoop-full form{
+  width: 70%;
+  margin-top: 50px;
+  display: flex;
+ flex-direction: column;
+}
+
+.sessionRegister {
+    text-align: center;
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
+}
+
+.input-register {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.result-register { 
+    display: flex;
+    flex-direction: column;
+    width: 28%;
+    color: #8D6100;
+}
+
+@media (max-width : 896px) {
+    .result-register {
+      min-width: 183px;
+    }
+  }
+ @media (max-width : 754px) {
+    .input-register {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0;
+    }
+
+    .result-register, .result-register-img {
+        padding-bottom: 26px;
+    }
+
+    .btn-register {
+        display: flex;
+        justify-content: center;
+    }
+
+    .container-shoop-full form{
+       height: 73vh;
+      }
+    
+  }
+
+.result-register input{
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 25px;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    border: none;
+    box-sizing: border-box;
+    border: 2px solid #3C3B3B;
+    text-align: center;
+}
+
+.result-register-img {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+   width: 28%;
+}
+
+.result-register-img input {
+    display: none;
+}
+
+.result-register-img label{
+    gap: 5px;
+    cursor: pointer;
+    color: #8D6100;
+}
+
+label .bx-camera {
+    color: #3C3B3B;
+}
+.btn-register {
+     text-align: center;
+     padding: 10px;
+}
+
+.btn-register button {
+    width: 30%;
+    padding: 20px;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+    border: none;
+    background-color: #E49502;
+    color: white;
+}
+
+.btn-register button:hover {
+    border: none;
+    color: white;
+    background-color: #3C3B3B;
+  }
+
+  /* Exibção da Loja */
+.container-shoop-full h1 {
+    align-self: flex-start;
+    padding: 25px 0px 0px 45px;
+    color: #8D6100;
+}
+
+  .div-exibicao { 
+    display: flex;
+    width: 70%;
+    margin-top: 40px;
+    justify-content: space-between;
+  }
+
+.div1 {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+}
+
+.div1 label {
+    color:#8D6100;
+}
+
+.div1 img {
+    width: 100%;
+    height: 70%;
+    object-fit: cover;
+    border: 2px solid #3C3B3B;
+    border-radius: 5px;
+}
+
+.div2 {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.exib-register {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    height: 100%;
+    color:#8D6100
+}
+
+.exib-register input {
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    border: 2px solid #3C3B3B;
+    outline: none;
+    box-sizing: border-box;
+    text-align: center;
+    color:#8D6100
+}
+
+.btn-exib {
+    display: flex;
+    gap: 30px; 
+    width: 40%;
+    margin-top: 60px;
+}
+.btn1 {
+    width: 50%;
+    height: 0;
+}
+
+.btn1 button:hover {
+    border: none;
+  color: white;
+  background-color: #3C3B3B;
+}
+
+.btn-exib form {
+    width: 50%;
+    margin: 0;
+    height: 0;
+}
+
+.btn-exib form button:hover {
+    border: none;
+  color: white;
+  background-color: rgb(206, 22, 22);
+}
+
+.btn-exib button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    color: white;
+    cursor: pointer;
+    background-color:#E49502;
+}
+
+@media (max-width : 1256px) {
+    .exib-register {
+        min-width: 243px;
+    }
+}
+@media (max-width : 884px) {
+    .container-shoop-full{
+     height: 118vh;
+    }
+    .div-exibicao { 
+        display: flex;
+       flex-direction: column;
+       align-items: center;
+       margin-top: 20px;
+      }
+    .container-shoop-full h1 {
+        width: 100%;
+        align-self: auto;
+        text-align: center;
+        color: #8D6100;
+        padding: 25px 0px 0px 0px;
+    }
+    .div1 {
+        width: 250px;
+        height: 250px ;
+    }
+}
+
+/* Editar a loja */ 
+.container-shoop-full-edit {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container-shoop-full-edit h2 {
+    align-self: self-start;
+    padding: 25px 0px 0px 45px;
+    color: #8D6100;
+}
+
+.container-shoop-full-edit form {
+    display: flex;
+    margin-top: 60px;
+    width: 73%;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.div1-edit {
+    width: 300px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.div1-edit img {
+    width: 100%;
+    height: 70%;
+    object-fit: cover;
+    border: 2px solid #8D6100;
+    border-radius: 5px;
+}
+
+.bx-camera{
+    text-align: center;
+    color: #3C3B3B;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 22px;
+}
+
+.div2-edit {
+    width: 62%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input2 {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.result-input-edit {
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+    text-align: center;
+    padding: 20px;
+    color: #8D6100;
+}
+
+.result-input-edit input {
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    outline: none;
+    border: 2px solid #3C3B3B;
+    text-align: center;
+    box-sizing: border-box;
+    color: #8D6100;
+}
+
+.btn-edit { 
+    margin-top: 20px;
+    width: 30%;
+}
+
+.btn-edit button {
+    padding: 10px;
+    width: 100%;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    color: white;
+    background-color: #E49502;
+}
+
+.btn-edit button:hover {
+    border: none;
+    color: white;
+    background-color: #0cae0a;
+  }
+
+  @media (max-width : 1284px) {
+    .result-input-edit {
+        min-width: 243px;
+    }
+    .div1-edit {
+        width: 280px;
+        height: 280px;
+    }
+}
+@media (max-width : 1108px) {
+   .input2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+   }
+}
+@media (max-width : 852px) {
+    .container-shoop-full-edit form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+        gap :0;
+    }
+
+    .container-shoop-full-edit h2 {
+        text-align: center;
+        padding: 0;
+        width: 100%;
+        margin-top: 24px;
+    }
+
+    .btn-edit {
+        margin-bottom: 25px;
+    }
+
+    .div1-edit {
+        width: 250px;
+        height: 250px;
+    }
+}  
+
+
+
+
+
+
+
+
+  

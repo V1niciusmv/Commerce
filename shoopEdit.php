@@ -22,7 +22,7 @@ if (isset($_POST['editar_loja'])) {
  
      if ($lojaAtual['nome_loja'] == $nomeLoja && $lojaAtual['telefone_loja'] == $telefoneLoja && $lojaAtual['cnpj_loja'] == $cnpjLoja 
      && (!isset($_FILES['imagem']) || $_FILES['imagem']['error'] !== UPLOAD_ERR_OK)){
-         $_SESSION['editLoja_sucesso'] = "Nenhuma alteração detectada.";
+         $_SESSION['loja_nao_editada'] = "Nenhuma alteração detectada.";
          header('location: views/shoopEdit_page.php');
          exit();
      }

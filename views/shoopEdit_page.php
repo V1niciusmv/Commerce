@@ -23,73 +23,75 @@ if ($stmt->rowCount() > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/shoop.css">
     <title>Loja</title>
 </head>
 
 <body>
     <?php include('header_page.php'); ?>
-    <div class="container-shooop-full">
-        <div class="form-shoop">
-            <form action="../shoopEdit.php" method="POST" enctype="multipart/form-data">
-                <?php if (isset($loja)) : ?>
-                <?php if (isset($_SESSION['editLoja_sucesso'])) {
-                    echo '<p class="">' . $_SESSION['editLoja_sucesso'] . '</p>';
+    <div class="container-shoop-full-edit">
+        <h2> Edite seus produtos </h2>
+        <?php if (isset($_SESSION['editLoja_sucesso'])) {
+                    echo '<p class="green">' . $_SESSION['editLoja_sucesso'] . '</p>';
                     unset($_SESSION['editLoja_sucesso']);
                 } ?>
                 <?php if (isset($_SESSION['restrincao_criarLoja'])) {
-                    echo '<p class="">' . $_SESSION['restrincao_criarLoja'] . '</p>';
+                    echo '<p class="red">' . $_SESSION['restrincao_criarLoja'] . '</p>';
                     unset($_SESSION['restrincao_criarLoja']);
                 } ?>
-                 <?php if (isset($_SESSION['loja_nao_editada'])) {
-                    echo '<p class="">' . $_SESSION['loja_nao_editada'] . '</p>';
+                <?php if (isset($_SESSION['loja_nao_editada'])) {
+                    echo '<p class="red">' . $_SESSION['loja_nao_editada'] . '</p>';
                     unset($_SESSION['loja_nao_editada']);
                 } ?>
-                 <?php if (isset($_SESSION['Erro no envio de imagem'])) {
-                    echo '<p class="">' . $_SESSION['Erro no envio de imagem'] . '</p>';
+                <?php if (isset($_SESSION['Erro no envio de imagem'])) {
+                    echo '<p class="red">' . $_SESSION['Erro no envio de imagem'] . '</p>';
                     unset($_SESSION['Erro no envio de imagem']);
                 } ?>
-                <div>
+        <form action="../shoopEdit.php" method="POST" enctype="multipart/form-data">
+            <?php if (isset($loja)): ?>
+                <div class="div1-edit">
                     <img id="imagem-loja" src="../<?= ($loja['caminho_img']); ?>">
-                    <input type="file" name="imagem" accept="image/*" style="display :none" id="id-input-img"> 
+                    <input type="file" name="imagem" accept="image/*" style="display :none" id="id-input-img">
                     <i class="bx bx-camera" id="id-icon"></i>
                 </div>
-                <div class="">
-                </div>
-                <div class="">
-                    <?php if (isset($_SESSION['nomeLojaUsado'])) {
-                        echo '<p class="">' . $_SESSION['nomeLojaUsado'] . '</p>';
-                        unset($_SESSION['nomeLojaUsado']);
-                    } ?>
-                    <input type="hidden" name="id_loja" value="<?= $loja['id_loja'] ?>">
+                <div class="div2-edit">
+                    <div class="input2">
+                    <div class="result-input-edit">
+                        <?php if (isset($_SESSION['nomeLojaUsado'])) {
+                            echo '<p class="">' . $_SESSION['nomeLojaUsado'] . '</p>';
+                            unset($_SESSION['nomeLojaUsado']);
+                        } ?>
+                        <input type="hidden" name="id_loja" value="<?= $loja['id_loja'] ?>">
 
-                    <label> Nome da loja: </label>
-                    <input type="text" name="nome" value="<?= $loja['nome_loja'] ?>" required>
+                        <label> Nome da loja: </label>
+                        <input type="text" name="nome" value="<?= $loja['nome_loja'] ?>" required>
+                    </div>
+                    <span id="erros"></span>
+                    <div class="result-input-edit">
+                        <?php if (isset($_SESSION['telefoneUsado'])) {
+                            echo '<p class="red">' . $_SESSION['telefoneUsado'] . '</p>';
+                            unset($_SESSION['telefoneUsado']);
+                        } ?>
+                        <label> Telefone: </label>
+                        <input type="text" name="telefone" id="telefone-id" maxlength="15"
+                            value="<?= $loja['telefone_loja'] ?>" required>
+                    </div>
+                    </div>
+                    <span id="errosCnpj"></span>
+                    <div class="result-input-edit">
+                        <?php if (isset($_SESSION['cnpjUsado'])) {
+                            echo '<p class="red">' . $_SESSION['cnpjUsado'] . '</p>';
+                            unset($_SESSION['cnpjUsado']);
+                        } ?>
+                        <label> CNPJ: </label>
+                        <input type="text" name="cnpj" id="cnpj-id" maxlength="18" value="<?= $loja['cnpj_loja'] ?>"
+                            required>
+                    </div>
+                    <div class="btn-edit">
+                        <button type="submit" name="editar_loja" id="submit-form"> Editar </button>
+                    </div>
                 </div>
-                <span id="erros"></span>
-                <div class="">
-                    <?php if (isset($_SESSION['telefoneUsado'])) {
-                        echo '<p class="">' . $_SESSION['telefoneUsado'] . '</p>';
-                        unset($_SESSION['telefoneUsado']);
-                    } ?>
-                    <label> Telefone: </label>
-                    <input type="text" name="telefone" id="telefone-id" maxlength="15"
-                        value="<?= $loja['telefone_loja'] ?>" required>
-                </div>
-                <span id="errosCnpj"></span>
-                <div class="">
-                    <?php if (isset($_SESSION['cnpjUsado'])) {
-                        echo '<p class="">' . $_SESSION['cnpjUsado'] . '</p>';
-                        unset($_SESSION['cnpjUsado']);
-                    } ?>
-                    <label> CNPJ: </label>
-                    <input type="text" name="cnpj" id="cnpj-id" maxlength="18" value="<?= $loja['cnpj_loja'] ?>"
-                        required>
-                </div>
-                <div>
-                    <button type="submit" name="editar_loja" id="submit-form"> Editar </button>
-                </div>
-                <?php endif ?>
-        </div>
+            <?php endif ?>
     </div>
     <script>
         function applyMaskPhone(phone) {
@@ -156,24 +158,25 @@ if ($stmt->rowCount() > 0) {
                 button.disabled = true;
             }
         }
-            const img = document.getElementById('imagem-loja');
-            const input = document.getElementById('id-input-img');
-            const icon = document.getElementById('id-icon');
+        const img = document.getElementById('imagem-loja');
+        const input = document.getElementById('id-input-img');
+        const icon = document.getElementById('id-icon');
 
-            icon.addEventListener('click', () => {
-                input.click();
-            });
+        icon.addEventListener('click', () => {
+            input.click();
+        });
 
-            input.addEventListener('change', (event) => {
-    const file = event.target.files[0]; // Obtém o arquivo selecionado
-    if (file) {
-        const reader = new FileReader(); // Cria um leitor de arquivos
-        reader.onload = function (e) {
-            img.src = e.target.result; // Atualiza a imagem mostrada
-        };
-        reader.readAsDataURL(file); // Lê o arquivo como uma URL local
-    }
-});
+        input.addEventListener('change', (event) => {
+            const file = event.target.files[0]; // Obtém o arquivo selecionado
+            if (file) {
+                const reader = new FileReader(); // Cria um leitor de arquivos
+                reader.onload = function (e) {
+                    img.src = e.target.result; // Atualiza a imagem mostrada
+                };
+                reader.readAsDataURL(file); // Lê o arquivo como uma URL local
+            }
+        });
     </script>
 </body>
+
 </html>
