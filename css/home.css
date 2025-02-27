@@ -1,3 +1,8 @@
+* {
+    margin: 0;
+    padding: 0;
+  }
+
 .user_nome {
     font-size: 16px;
 }
@@ -10,7 +15,7 @@
 display: flex;
 justify-content: space-between;
 padding-top: 20px;
-padding-bottom: 30px;
+padding-bottom: 0px;
 }
 
 .first h1 {

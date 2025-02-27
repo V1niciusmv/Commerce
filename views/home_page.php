@@ -72,6 +72,49 @@ $existeProduto = $stmt->fetchColumn();
             }
         });
     }
+
+    function openModal(idProduto) {
+            const pro = <?= json_encode($produtos) ?>;
+            const product = pro.find(products => products.id_products == idProduto);
+
+            document.getElementById('modalProduct').style.display = 'flex';
+
+            document.getElementById('modal-img').src = '../' + product.caminho_img;
+            document.getElementById('modal-nome').value = product.nome_products;
+            document.getElementById('modal-categoria').value = product.nome_category;
+            const categoria = {
+                1: "Eletrônicos",
+                2: "Comidas",
+                3: "Bebidas",
+                4: "Roupas",
+                5: "Acessórios",
+                6: "Móveis",
+                7: "Brinquedos",
+                8: "Livros",
+                9: "Ferramentas",
+                10: "Beleza e Cuidados",
+                11: "Esportes",
+                12: "Saúde",
+                13: "Automotivo",
+                14: "Casa e Decoração",
+                15: "Jardinagem",
+                16: "Tecnologia",
+                17: "Higiene",
+                18: "Informática"
+            };
+            const categoriaIdModal = product.nome_category;
+
+            if (categoria[categoriaIdModal]) {
+                document.getElementById('modal-categoria').value = categoria[categoriaIdModal];
+            }
+            document.getElementById('modal-valor').value = product.valor_products;
+            document.getElementById('modal-estoque').value = product.estoque_products;
+            document.getElementById('modal-descricao').value = product.descricao_products;
+        }
+        
+        function fecharModal() {
+    document.getElementById('modalProduct').style.display = 'none';
+}
     </script>
 </body>
 </html>

@@ -8,8 +8,10 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $mostrarFormulario = false;
-if (isset($_SESSION['restricao_criarImgProduto']) || isset($_SESSION['nomeUtilizado']) || isset($_SESSION['restrincao_criarProduto']) ||
-    isset($_SESSION['ValorEstoqueGrande'])) {
+if (
+    isset($_SESSION['restricao_criarImgProduto']) || isset($_SESSION['nomeUtilizado']) || isset($_SESSION['restrincao_criarProduto']) ||
+    isset($_SESSION['ValorEstoqueGrande'])
+) {
     $mostrarFormulario = true;
 }
 
@@ -73,7 +75,8 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
                 <div class="cliqueAq" id="cadastrar"> Cadastrar </div>
             </div>
         <?php endif ?>
-        <div class="container-form-cadastro" id="form-cadastro" style="display: <?= $mostrarFormulario ? 'true' : 'false'; ?>">
+        <div class="container-form-cadastro" id="form-cadastro"
+            style="display: <?= $mostrarFormulario ? 'true' : 'false'; ?>">
             <h1> Cadastre seu produto </h1>
             <?php if (isset($_SESSION['restricao_criarImgProduto'])) {
                 echo '<p class="sessionRed ">' . $_SESSION['restricao_criarImgProduto'] . '</p>';
@@ -99,7 +102,7 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
                     </div>
                     <div class="div-resultados">
                         <label>Categoria</label>
-                        <select name="categoria" >
+                        <select name="categoria">
                             <option disabled selected>Selecionar</option>
                             <option value="1" <?= isset($_POST['categoria']) && $_POST['categoria'] == 1 ? 'selected' : ''; ?>>Eletrônicos</option>
                             <option value="2" <?= isset($_POST['categoria']) && $_POST['categoria'] == 2 ? 'selected' : ''; ?>>Comidas</option>
@@ -127,7 +130,7 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
                         <label> Valor</label>
                         <div class="position">
                             <i id="less" class='bx bx-minus'></i>
-                            <input type="number" id="input" name="valor" value="<?= $_GET['valor'] ?? '' ?>" >
+                            <input type="number" id="input" name="valor" value="<?= $_GET['valor'] ?? '' ?>">
                             <i id="more" class='bx bx-plus'></i>
                         </div>
                     </div>
@@ -145,20 +148,19 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
                     <span id="file-name" class="file-name">Nenhum arquivo escolhido</span>
                 </div>
                 <div class="div-text">
-                   <label for="descricao"> Descrição </label>
+                    <label for="descricao"> Descrição </label>
                     <textarea id="descricao" name="descricao" rows="5" cols="40"
                         placeholder="Digite a descrição do produto">
                             <?= isset($_POST['descricao']) ? htmlspecialchars($_POST['descricao']) : '' ?>
                         </textarea>
-                </div> 
+                </div>
                 <div class="btn">
                     <button type="submit" for="form" name="adicionar_produto"> Adicionar</button>
                 </div>
             </form>
         </div>
     </div>
-    </div>
-    <script>        
+    <script>
         const moreIcon = document.getElementById("more");
         const lessIcon = document.getElementById("less");
         const input = document.getElementById("input");
@@ -172,19 +174,18 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
         });
 
         document.getElementById("idimg").addEventListener("change", function () {
-        let fileName = this.files.length > 0 ? this.files[0].name : "Nenhum arquivo escolhido";
-        document.getElementById("file-name").textContent = fileName;
-    });
+            let fileName = this.files.length > 0 ? this.files[0].name : "Nenhum arquivo escolhido";
+            document.getElementById("file-name").textContent = fileName;
+        });
 
         const mostrarFormulario = <?= $mostrarFormulario ? 'true' : 'false' ?>;
         if (mostrarFormulario) {
-                const produtos = document.getElementById('produto');
-                const cadastro = document.getElementById('form-cadastro');
+            const produtos = document.getElementById('produto');
+            const cadastro = document.getElementById('form-cadastro');
 
-                produtos.style.display = 'none';
-                cadastro.style.display = 'flex';
+            produtos.style.display = 'none';
+            cadastro.style.display = 'flex';
         }
-
 
         const verificar = <?php echo !isset($produtos) ? 'false' : 'true'; ?>;
         const verificarLoja = <?php echo isset($loja['id_loja']) ? 'true' : 'false'; ?>;
@@ -237,7 +238,6 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
             };
 
             const inputsCategoria = document.querySelectorAll('#cat-pro');
-
             inputsCategoria.forEach(input => {
                 const categoriaId = input.value;
 
@@ -247,6 +247,49 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
             });
         }
 
+
+        function openModal(idProduto) {
+            const pro = <?= json_encode($produtos) ?>;
+            const product = pro.find(products => products.id_products == idProduto);
+
+            document.getElementById('modalProduct').style.display = 'flex';
+
+            document.getElementById('modal-img').src = '../' + product.caminho_img;
+            document.getElementById('modal-nome').value = product.nome_products;
+            document.getElementById('modal-categoria').value = product.nome_category;
+            const categoria = {
+                1: "Eletrônicos",
+                2: "Comidas",
+                3: "Bebidas",
+                4: "Roupas",
+                5: "Acessórios",
+                6: "Móveis",
+                7: "Brinquedos",
+                8: "Livros",
+                9: "Ferramentas",
+                10: "Beleza e Cuidados",
+                11: "Esportes",
+                12: "Saúde",
+                13: "Automotivo",
+                14: "Casa e Decoração",
+                15: "Jardinagem",
+                16: "Tecnologia",
+                17: "Higiene",
+                18: "Informática"
+            };
+            const categoriaIdModal = product.nome_category;
+
+            if (categoria[categoriaIdModal]) {
+                document.getElementById('modal-categoria').value = categoria[categoriaIdModal];
+            }
+            document.getElementById('modal-valor').value = product.valor_products;
+            document.getElementById('modal-estoque').value = product.estoque_products;
+            document.getElementById('modal-descricao').value = product.descricao_products;
+        }
+        
+        function fecharModal() {
+    document.getElementById('modalProduct').style.display = 'none';
+}
     </script>
 </body>
 
