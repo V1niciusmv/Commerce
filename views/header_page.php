@@ -2,27 +2,26 @@
 require_once '../bd/connection.php';
 
 $rotas = [
-    'home_page.php' => null,
-    'product_page.php' => 'home_page.php',
-    'productEdit_page.php' => 'product_page.php',
-    'shoop_page.php' => 'home_page.php',
-    'shoopEdiit_page.php' => 'shoop_page.php',
+  'home_page.php' => null,
+  'product_page.php' => 'home_page.php',
+  'productEdit_page.php' => 'product_page.php',
+  'shoop_page.php' => 'home_page.php',
+  'shoopEdit_page.php' => 'shoop_page.php',
 ];
 
 $paginaAtual = basename($_SERVER['PHP_SELF']);
 
 $destino = isset($rotas[$paginaAtual]) ? $rotas[$paginaAtual] : 'home_page.php';
-
-?>
+?> 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/header.css">
   <title>header</title>
 </head>
+
 <body>
   <div class="container-header">
     <div class="logo-header">
@@ -35,6 +34,9 @@ $destino = isset($rotas[$paginaAtual]) ? $rotas[$paginaAtual] : 'home_page.php';
       }
       ?>
     </div>
+    <?php if ($paginaAtual === 'buy_page.php') 
+        echo "<h1> Carrinho de compras </h1>";
+      ?>
     <?php if (!isset($_SESSION['user_id'])): ?>
       <div class="links-header">
         <div class="font-header" onclick="window.location.href='/views/register_page.php?action=register'"> Cadastre-se
@@ -42,13 +44,16 @@ $destino = isset($rotas[$paginaAtual]) ? $rotas[$paginaAtual] : 'home_page.php';
         <div class="font-header" onclick="window.location.href='/views/register_page.php?action=login'"> Login </div>
       </div>
     <?php else: ?>
+      <?php if ($paginaAtual != 'buy_page.php'): ?>
       <div class="search">
-        <input type="search">
+        <input type="search" id="search-id-input">
         <i class='bx bx-search'></i>
+        <div id="resultadosBusca" class="search-results">
+        </div>
       </div>
       <div class="link-header-home">
         <div class="cart">
-          <i class='bx bx-cart'></i>
+          <i class='bx bx-cart' onclick="window.location.href='buy_page.php'"></i>
         </div>
         <div class="notification">
           <i class='bx bx-bell'></i>
@@ -65,6 +70,7 @@ $destino = isset($rotas[$paginaAtual]) ? $rotas[$paginaAtual] : 'home_page.php';
           </div>
         </div>
       </div>
+      <?php endif ?>
     <?php endif ?>
   </div>
   <script>
@@ -80,6 +86,57 @@ $destino = isset($rotas[$paginaAtual]) ? $rotas[$paginaAtual] : 'home_page.php';
     document.getElementById('id-dropdown').addEventListener('click', function (event) {
       event.stopPropagation();
     });
+
+    document.getElementById('search-id-input').addEventListener('input', function () {
+  const itens = this.value.trim();
+  const iconSearch = document.getElementById('resultadosBusca');
+
+  if (itens === "") {
+    iconSearch.style.display = "none";
+    return;
+  }
+  iconSearch.style.display = "flex";
+  iconSearch.innerHTML = '';
+
+  fetch(`../header.php?query=${encodeURIComponent(itens)}`)
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('resultadosBusca');
+      iconSearch.innerHTML = "";
+
+      if (data.length === 0) {
+        iconSearch.innerHTML = "<p class='nenhumProduto'>Nenhum produto encontrado</p>";
+      } else {
+        data.forEach(produto => {
+          const resultDiv = document.createElement("div");
+          const span = document.createElement("span");
+
+          span.innerText = produto.nome_products;
+          span.classList.add("produto-item");
+
+          const idProduto = produto.id_products;
+
+          const paginaAtual = '<?= $paginaAtual ?>';
+          if (paginaAtual === "product_page.php") {
+            span.addEventListener('click', function () {
+              window.location.href = ''; 
+            });
+          } else {
+            span.addEventListener('click', function () {
+              document.getElementById('search-id-input').value = produto.nome_products;
+              window.location.href = `../viewPage.php?id=${idProduto}`;
+            });
+          }
+          itens.value = produto.nome_products;
+
+          resultDiv.classList.add("produto-div");
+
+          resultDiv.appendChild(span);
+          iconSearch.appendChild(resultDiv);
+        });
+      }
+    });
+});
   </script>
-  </body>
+</body>
 </html>

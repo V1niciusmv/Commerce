@@ -6,27 +6,45 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$page = explode('/views/', $_SERVER['REQUEST_URI'])[1];
-if ($page == 'home_page.php') {
-    $sql = "SELECT products.*, imagens.caminho_img, loja.id_loja, category.id_category, category.nome_category
-FROM products
-LEFT JOIN imagens ON products.id_products = produtos_id_products 
-LEFT JOIN loja ON products.loja_id_loja= id_loja
-LEFT JOIN category ON products.category_id_category = id_category";
-    $stmt = $connection->prepare($sql);
-    $stmt->execute();
+if (isset($_SESSION['idProduto'])) {
+    $query = $_SESSION['idProduto'];
+    unset($_SESSION['idProduto']);
 } else {
-    $sql = "SELECT products.*, imagens.caminho_img, loja.id_loja, category.id_category, category.nome_category
-FROM products
-LEFT JOIN imagens ON products.id_products = produtos_id_products 
-LEFT JOIN loja ON products.loja_id_loja= id_loja
-LEFT JOIN category ON products.category_id_category = id_category 
-WHERE products.users_id_users = :user_id";
-
-    $stmt = $connection->prepare($sql);
-    $stmt->bindParam(':user_id', $_SESSION['user_id']);
-    $stmt->execute();
+    $query = '';
 }
+
+$page = basename($_SERVER['REQUEST_URI']);
+
+$sql = "SELECT products.*, imagens.caminho_img, loja.id_loja, category.id_category, category.nome_category
+        FROM products
+        LEFT JOIN imagens ON products.id_products = imagens.produtos_id_products 
+        LEFT JOIN loja ON products.loja_id_loja= loja.id_loja
+        LEFT JOIN category ON products.category_id_category = category.id_category";
+
+if ($page == 'home_page.php') {
+    if ($query) {
+        $sql .= " WHERE products.id_products = :query";
+        $stmt = $connection->prepare($sql);
+        $stmt->bindParam(':query', $query);
+        
+    } else {
+        $stmt = $connection->prepare($sql);
+    }
+} elseif ($page === 'product_page.php') {
+    if ($query) {
+        $sql .= " WHERE products.users_id_users = :user_id AND products.id_products = :query";
+        $stmt = $connection->prepare($sql);
+        $stmt->bindParam(':user_id', $_SESSION['user_id']);
+        $stmt->bindParam(':query', $query);
+    } else {
+        $sql .= " WHERE products.users_id_users = :user_id";
+        $stmt = $connection->prepare($sql);
+        $stmt->bindParam(':user_id', $_SESSION['user_id']);
+    }
+}
+
+$stmt->execute();
+
 if ($stmt->rowCount() > 0) {
     $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } else {
@@ -115,7 +133,7 @@ if ($stmt->rowCount() > 0) {
             <div class="modalProduct">
                 <div class="div1-modal">
                     <div class="img_product-modal">
-                        <img id="modal-img" src=" ../<?= $produto['caminho_img'] ?>">
+                        <img id="modal-img">
                     </div>
                     <div class="details-modal">
                         <div class="nome-product-modal">
@@ -138,14 +156,14 @@ if ($stmt->rowCount() > 0) {
                     <div class="descricao-modal">
                         <label> Descrição </label>
                         <textarea id="modal-descricao" name="descricao" rows="5" cols="40" readonly>
-                            </textarea>
+                                    </textarea>
                     </div>
                     <div class="link-modal">
                         <div class="ceta" onclick="fecharModal()">
                             <i class='bx bx-arrow-back'></i>
                         </div>
                         <div class="button-link-modal">
-                            <button> Comprar </button>
+                            <button onclick="window.location.href='buy_page.php'"> Comprar </button>
                         </div>
                         <div class="ceta">
                             <i class='bx bx-cart-add'></i>
@@ -157,7 +175,7 @@ if ($stmt->rowCount() > 0) {
             <div class="modalProduct">
                 <div class="div1-modal">
                     <div class="img_product-modal">
-                        <img id="modal-img" src=" ../<?= $produto['caminho_img'] ?>">
+                        <img id="modal-img">
                     </div>
                     <div class="details-modal">
                         <div class="nome-product-modal">
@@ -180,7 +198,7 @@ if ($stmt->rowCount() > 0) {
                     <div class="descricao-modal">
                         <label> Descrição </label>
                         <textarea id="modal-descricao" name="descricao" rows="5" cols="40" readonly>
-                            </textarea>
+                                    </textarea>
                     </div>
                     <div class="ceta-back" onclick="fecharModal()">
                         <i class='bx bx-arrow-back'></i>
