@@ -94,6 +94,10 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
                 echo '<p class="sessionRed ">' . $_SESSION['ValorEstoqueGrande'] . '</p>';
                 unset($_SESSION['ValorEstoqueGrande']);
             } ?>
+              <?php if (isset($_SESSION['ValorGrande'])) {
+                echo '<p class="sessionRed">' . $_SESSION['ValorGrande'] . '</p>';
+                unset($_SESSION['ValorGrande']);
+            } ?>
             <form id="form" action="../product.php" method="POST" enctype="multipart/form-data">
                 <div class="divs-input">
                     <div class="div-resultados">
@@ -246,7 +250,6 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
                 }
             });
         }
-
 
         function openModal(idProduto) {
             const pro = <?= json_encode($produtos) ?>;

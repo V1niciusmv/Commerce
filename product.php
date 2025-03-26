@@ -22,6 +22,12 @@ if (isset($_POST['adicionar_produto'])) {
         exit();
     }
 
+    if ($valorProduto > 10000) {
+        $_SESSION['ValorGrande'] = 'È permitido apenas 10.000 no valor';
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit();
+    }
+
 try {
     $sql = "SELECT COUNT(*) FROM products WHERE nome_products = :nome_produto AND users_id_users = :user_id";
     $stmt = $connection->prepare($sql);

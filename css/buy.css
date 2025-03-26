@@ -1,26 +1,258 @@
+html,
 body {
     padding: 0;
     margin: 0;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .container-buyPage {
-    background-color: green;
     display: flex;
+    width: 100%;
+    height: 100%;
 }
 
 .div1 {
+    display: flex;
+    flex-direction: column;
     width: 70%;
-    height: 100vh;
-    background-color: purple;
+    box-sizing: border-box;
 }
 
-.div2 {
-    width:30%;
-    height: 100vh;
-    background-color: blue;
+.product-buyPage {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    border: solid 1px #8D6100;
+    gap: 20px;
+    box-sizing: border-box;
 }
 
-.img_product img{
+.u {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 70%;
+    align-items: center;
+    gap: 50px;
+}
+
+.img_product {
     width: 200px;
+    height: 200px;
+    border-radius: 5px;
+    flex-shrink: 0
+}
+
+.img_product img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 130px;
+}
+
+.nome-product input, .nome-category input {
+    background-color: transparent;
+    text-align: center;
+    outline: none;
+    border: none;
+    width: 100%;
+    color: #8D6100;
+}
+
+#nome-pro {
+    font-size: 20px;
+}
+#cat-pro{
+    font-size: 14px;
+}
+
+.priceEestoque{
+    display: flex;
+    gap: 8px;
+}
+
+.dollar {
+    display: flex;
+}
+
+.dollar input {
+    outline: none;
+    border: none;
+    background-color: transparent;
+    font-size: 18px;
+    color: #8D6100;
+    margin-left: 10px;
+    text-align: center;
+    width: 50px;
+}
+
+.dollar p {
+    color: green;
+    font-weight:bold;
+    text-align: center;
+}
+
+.quantidade {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.quantidade input{
+    outline: none;
+    border: none;
+    width: 10px;
+    color: #8D6100;
+    margin-left: 3px;
+    font-size: 17px;
+    background-color: transparent;
+}
+
+.bx-plus {
+    font-size: 20px;
+    color: #8D6100;
+    cursor: pointer;
+}
+.bx-minus{
+    font-size: 20px;
+    color: #8D6100;
+    cursor: pointer;
+}
+
+.buttons {
+    width: 20%;
+}
+
+.buttons button {
+    padding: 10px;
+    width: 100%;
+    outline: none;
+    border: none;
+    background-color: red;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+
+@media (max-width : 1208px) {
+   .buttons {
+    min-width: 116px;
+   }
+    
+ }
+
+@media (max-width : 1027px) {
+   .u {
+    display: flex;
+    justify-content: space-around;
+   }
+}
+
+@media (max-width : 755px) {
+    .u {
+     display: flex;
+     justify-content: space-evenly;
+     flex-direction: column;
+     gap: 10px;
+    }
+ }
+    .div2 {
+        width: 30%;
+        height: 100%;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       background-color: #E49502;
+       text-align: center;
+       margin: 1px;
+       color: white;
+       border-radius: 3px;
+    }
+
+    .vendas {
+        width: 100%;
+    }
+    
+    .quant {
+        display: flex;
+    }
+
+    .vendas span{
+       width: 100%;
+       padding-top: 10px;
+       font-size: 18px;
+    }
+
+    .quantidadeVenda {
+        color: red;
+    }
+
+    .total {
+        width: 50%;
+        margin-top: 40px;
+    }
+
+    .total p{
+       padding: 10px;
+       width: 100%;
+       background-color: #8D6100;
+       border-radius: 5px;
+       cursor: pointer;
+    }
+
+    .total p:hover {
+        background-color: green;
+    }
+
+    .total span {
+        color: green;
+        font-weight: bolder;
+    }
+
+.opti {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #8D6100;
+    width: 100%;
+    height: 70vh;
+}
+
+.opti button {
+    padding: 12px;
+    width: 20%;
+    background-color: #E49502;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.opti button:hover {
+    color: white;
+        background-color: #3C3B3B;
 }
 

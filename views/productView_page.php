@@ -15,7 +15,7 @@ if (isset($_SESSION['idProduto'])) {
 
 $page = basename($_SERVER['REQUEST_URI']);
 
-$sql = "SELECT products.*, imagens.caminho_img, loja.id_loja, category.id_category, category.nome_category
+$sql = "SELECT products.*, imagens.caminho_img, loja.nome_loja, category.nome_category
         FROM products
         LEFT JOIN imagens ON products.id_products = imagens.produtos_id_products 
         LEFT JOIN loja ON products.loja_id_loja= loja.id_loja
@@ -163,7 +163,10 @@ if ($stmt->rowCount() > 0) {
                             <i class='bx bx-arrow-back'></i>
                         </div>
                         <div class="button-link-modal">
-                            <button onclick="window.location.href='buy_page.php'"> Comprar </button>
+                            <form action="../cart.php" method="POST">
+                                <input type="hidden" name="id_produto" id="modal-id-product">
+                                <button type="submit"> Comprar </button>
+                            </form>
                         </div>
                         <div class="ceta">
                             <i class='bx bx-cart-add'></i>

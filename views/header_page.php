@@ -9,7 +9,7 @@ $rotas = [
   'shoopEdit_page.php' => 'shoop_page.php',
 ];
 
-$paginaAtual = basename($_SERVER['PHP_SELF']);
+$paginaAtual = basename($_SERVER['PHP_SELF'], '.php');
 
 $destino = isset($rotas[$paginaAtual]) ? $rotas[$paginaAtual] : 'home_page.php';
 ?> 

@@ -21,6 +21,11 @@ if ($estoqueProduto > 1000) {
     header("location: views/productEdit_page.php?nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
     exit();
 }
+if ($valorProduto > 10000) {
+    $_SESSION['ValorGrande'] = 'È permitido apenas 10.000 no valor';
+    header("Location: views/productEdit_page.php?nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
+    exit();
+}
 
     $sqlTodosProdut = "SELECT products.nome_products, products.valor_products, products.descricao_products, products.estoque_products, 
     category.nome_category FROM products LEFT JOIN category ON products.category_id_category = category.id_category

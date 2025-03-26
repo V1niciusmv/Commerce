@@ -65,6 +65,10 @@ if ($stmt->rowCount() > 0) {
                 echo '<p class="sessionRed">' . $_SESSION['ValorEstoqueGrande'] . '</p>';
                 unset($_SESSION['ValorEstoqueGrande']);
             } ?>
+             <?php if (isset($_SESSION['ValorGrande'])) {
+                echo '<p class="sessionRed">' . $_SESSION['ValorGrande'] . '</p>';
+                unset($_SESSION['ValorGrande']);
+            } ?>
             </div>
             <form action="../productEdit.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="id_product" value="<?= $produto['id_products'] ?>">

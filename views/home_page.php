@@ -12,12 +12,14 @@ $stmt->bindParam(':id_user', $_SESSION['user_id']);
 $stmt->execute();
 
 $existeProduto = $stmt->fetchColumn();
- if($existeProduto > 0) {
+if ($existeProduto > 0) {
     $produto = $existeProduto;
- }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,6 +28,7 @@ $existeProduto = $stmt->fetchColumn();
     <link rel="stylesheet" href="/css/product.css">
     <title>Bem vindo</title>
 </head>
+
 <body>
     <?php
     include('header_page.php');
@@ -33,52 +36,57 @@ $existeProduto = $stmt->fetchColumn();
     <div class="container-main-full">
         <div class="first">
             <h1> Produtos </h1>
+            <?php if (isset($_SESSION['produto_no_carrinho'])) {
+                echo '<p class="sessionRed ">' . $_SESSION['produto_no_carrinho'] . '</p>';
+                unset($_SESSION['produto_no_carrinho']);
+            } ?>
             <i class='bx bx-filter' alt="filtros"></i>
         </div>
-        <?php include ('productView_page.php') ?>
+        <?php include('productView_page.php') ?>
     </div>
-       <script>
-    const verificarSeTem = <?= isset($produto) ? 'true' : 'false' ?>;
+    <script>
+        const verificarSeTem = <?= isset($produto) ? 'true' : 'false' ?>;
 
-    if (verificarSeTem) {
-        const categorias = {
-            1: "Eletrônicos",
-            2: "Comidas",
-            3: "Bebidas",
-            4: "Roupas",
-            5: "Acessórios",
-            6: "Móveis",
-            7: "Brinquedos",
-            8: "Livros",
-            9: "Ferramentas",
-            10: "Beleza e Cuidados",
-            11: "Esportes",
-            12: "Saúde",
-            13: "Automotivo",
-            14: "Casa e Decoração",
-            15: "Jardinagem",
-            16: "Tecnologia",
-            17: "Higiene",
-            18: "Informática"
-        };
+        if (verificarSeTem) {
+            const categorias = {
+                1: "Eletrônicos",
+                2: "Comidas",
+                3: "Bebidas",
+                4: "Roupas",
+                5: "Acessórios",
+                6: "Móveis",
+                7: "Brinquedos",
+                8: "Livros",
+                9: "Ferramentas",
+                10: "Beleza e Cuidados",
+                11: "Esportes",
+                12: "Saúde",
+                13: "Automotivo",
+                14: "Casa e Decoração",
+                15: "Jardinagem",
+                16: "Tecnologia",
+                17: "Higiene",
+                18: "Informática"
+            };
 
-        const inputsCategoria = document.querySelectorAll('#categoria');
+            const inputsCategoria = document.querySelectorAll('#categoria');
 
-        inputsCategoria.forEach(input => {
-            const categoriaId = input.value;
+            inputsCategoria.forEach(input => {
+                const categoriaId = input.value;
 
-            if (categorias[categoriaId]) {
-                input.value = categorias[categoriaId];
-            }
-        });
-    }
+                if (categorias[categoriaId]) {
+                    input.value = categorias[categoriaId];
+                }
+            });
+        }
 
-    function openModal(idProduto) {
+        function openModal(idProduto) {
             const pro = <?= json_encode($produtos) ?>;
             const product = pro.find(products => products.id_products == idProduto);
 
             document.getElementById('modalProduct').style.display = 'flex';
 
+            document.getElementById('modal-id-product').value = product.id_products;
             document.getElementById('modal-img').src = '../' + product.caminho_img;
             document.getElementById('modal-nome').value = product.nome_products;
             document.getElementById('modal-categoria').value = product.nome_category;
@@ -111,10 +119,11 @@ $existeProduto = $stmt->fetchColumn();
             document.getElementById('modal-estoque').value = product.estoque_products;
             document.getElementById('modal-descricao').value = product.descricao_products;
         }
-        
+
         function fecharModal() {
-    document.getElementById('modalProduct').style.display = 'none';
-}
+            document.getElementById('modalProduct').style.display = 'none';
+        }
     </script>
 </body>
+
 </html>
