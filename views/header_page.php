@@ -12,6 +12,21 @@ $rotas = [
 $paginaAtual = basename($_SERVER['PHP_SELF'], '.php');
 
 $destino = isset($rotas[$paginaAtual]) ? $rotas[$paginaAtual] : 'home_page.php';
+
+$sql = "SELECT id_cart FROM cart WHERE user_id_cart = :cartId";
+$stmt = $connection->prepare($sql);
+$stmt->bindParam(':cartId', $_SESSION['user_id']);
+$stmt->execute();
+$verificar = $stmt->fetch(PDO::FETCH_ASSOC);
+if ($verificar) {
+  $cartId = $verificar['id_cart'];
+}
+
+$sql = "SELECT SUM(quantity) AS total FROM cart_items WHERE cart_id = :cart_Id";
+$stmt = $connection->prepare($sql);
+$stmt->bindParam(':cart_Id', $cartId);
+$stmt->execute();
+$totalProdutos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 ?> 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,6 +69,9 @@ $destino = isset($rotas[$paginaAtual]) ? $rotas[$paginaAtual] : 'home_page.php';
       <div class="link-header-home">
         <div class="cart">
           <i class='bx bx-cart' onclick="window.location.href='buy_page.php'"></i>
+        <?php if ($totalProdutos): ?>
+          <span id="cart-count" class="cart-count"> <?= $totalProdutos ?></span>
+          <?php endif ?>
         </div>
         <div class="notification">
           <i class='bx bx-bell'></i>

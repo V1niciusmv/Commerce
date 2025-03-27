@@ -40,6 +40,10 @@ if ($existeProduto > 0) {
                 echo '<p class="sessionRed ">' . $_SESSION['produto_no_carrinho'] . '</p>';
                 unset($_SESSION['produto_no_carrinho']);
             } ?>
+              <?php if (isset($_SESSION['Existe_produtoAdd'])) {
+                echo '<p class="sessionRed ">' . $_SESSION['Existe_produtoAdd'] . '</p>';
+                unset($_SESSION['Existe_produtoAdd']);
+            } ?>
             <i class='bx bx-filter' alt="filtros"></i>
         </div>
         <?php include('productView_page.php') ?>
@@ -86,7 +90,8 @@ if ($existeProduto > 0) {
 
             document.getElementById('modalProduct').style.display = 'flex';
 
-            document.getElementById('modal-id-product').value = product.id_products;
+            document.getElementById('modal-id-product-comprar').value = product.id_products;
+            document.getElementById('modal-id-product-adicionar').value = product.id_products;
             document.getElementById('modal-img').src = '../' + product.caminho_img;
             document.getElementById('modal-nome').value = product.nome_products;
             document.getElementById('modal-categoria').value = product.nome_category;
@@ -123,6 +128,10 @@ if ($existeProduto > 0) {
         function fecharModal() {
             document.getElementById('modalProduct').style.display = 'none';
         }
+
+        document.getElementById('add-carrinho').addEventListener("click", function () {
+            document.getElementById('id-form-cart-add').submit();
+        })
     </script>
 </body>
 

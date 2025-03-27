@@ -164,12 +164,16 @@ if ($stmt->rowCount() > 0) {
                         </div>
                         <div class="button-link-modal">
                             <form action="../cart.php" method="POST">
-                                <input type="hidden" name="id_produto" id="modal-id-product">
+                                <input type="hidden" name="id_produto" id="modal-id-product-comprar">
                                 <button type="submit"> Comprar </button>
                             </form>
-                        </div>
-                        <div class="ceta">
-                            <i class='bx bx-cart-add'></i>
+
+                            <div class="ceta">
+                                <form id="id-form-cart-add" action="../cartAddBuy.php" method="POST">
+                                    <input type="hidden" name="id_produto" id="modal-id-product-adicionar">
+                                    <button type="submit"><i class='bx bx-cart-add'></i></button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
