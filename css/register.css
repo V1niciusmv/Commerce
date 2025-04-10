@@ -4,21 +4,32 @@
     box-sizing: border-box;
  }
 
+ body {
+    width: 100vw;
+    height: 100vh;
+ }
+
 .container-full {
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background-color: #b0b0b0;
+    background-color: #ffffff;
  }
 
  .form-full{
     display: flex;
-    width: 820px;
+    width: 60%;
     height: 600px;
-    border-radius: 30px;
+    min-width: 450px;
+   border-radius: 20%;
     box-shadow: 0 0 30px black;
  }
+
+ form {
+    width: 100%;
+}
 
 .form-login {
     position: relative;
@@ -27,7 +38,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    border-bottom-left-radius: 20px;
+    border-top-left-radius: 20px;
+    padding: 0;
+    background-color: #E49502;
+}
+
+ h1 {
+    color: white;
+}
+
+label {
+    color: white;
 }
 
 .form-registro {
@@ -37,25 +59,29 @@
     display: flex;
     justify-content: center;
     align-items: center; 
-    padding: 10px;
+    background-color: #E49502;
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 20px;
 }
 
 .lg, .rg {
     display: flex;
     flex-direction: column;
     position: relative;
-    width: 100%;
+    width: calc(100% - 10px);
     padding: 10px;
-
+    box-sizing: border-box;
 }
 
 input {
     padding: 13px 30px 10px 13px;
-    width: 300px;
+    width: 100%;
     border: none;
     border-radius: 8px;
     outline: none;
     cursor: pointer;
+    box-sizing: border-box;
+    color: #8D6100;
 }
 
 i {
@@ -63,6 +89,7 @@ i {
     right: 15px;
     bottom: 20px;
     font-size: 18px;
+    color: #8D6100;
 }
 
  h1{
@@ -70,16 +97,29 @@ i {
     justify-content: center;
 }
 
+.lg-button, .rg-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
 button {
+    width: 70%;
     padding: 10px;
     border: none;
     border-radius: 8px;
     outline: none;
     cursor: pointer;
-    background-color: transparent;
-    border : 2px solid white;
+    background-color: white;
     box-shadow: none;
+    color: #8D6100;
 }
+
+.lg-button button:hover, .rg-button button:hover {
+    background-color: #3C3B3B;
+    color: white;
+}
+
 
 .esqueci-senha {
     text-align: center;
@@ -91,10 +131,11 @@ button {
     color: white;
 }
 
-.rg p{
+p{
     text-align: center;
     padding-top: 10px;
     cursor: pointer;
+    color: white;
 }
 
 .div-login { 
@@ -108,13 +149,22 @@ button {
     flex-direction: column;
     gap: 30px;
     display: none;
-    border-top-left-radius: 30px;
-    border-bottom-left-radius: 30px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    text-align: center;
 
 }
 
-.div-button button{
-    width: 300px;
+.div-button {
+    width: 70%
+}
+.div-button button {
+    width: 100%;
+}
+
+.div-button button:hover {
+    background-color: #E49502;
+    color: white;
 }
 
 .div-register {
@@ -127,8 +177,9 @@ button {
     align-items: center;
     flex-direction: column;
     gap: 30px; 
-    border-top-right-radius: 30px;
-    border-bottom-right-radius: 30px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    text-align: center;
 }
 
 .mensagem-sucesso{

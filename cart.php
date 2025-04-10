@@ -45,24 +45,8 @@ if ($quantidade) {
     $stmtAddIdCartProduct = $connection->prepare($sqlAddIdCartProduct);
     $stmtAddIdCartProduct->bindParam(':idProduto', $id_produto);
     $stmtAddIdCartProduct->execute();
-
-    $verificarSeProdutoExiste = $stmtAddIdCartProduct->fetch(PDO::FETCH_ASSOC);
-    if ($verificarSeProdutoExiste) {
-        $sqlUpdateIdCartProduto = "UPDATE products SET cart_id_cart = :idCart WHERE id_products = :id_produto";
-        $stmtUpdateIdCartProduto = $connection->prepare($sqlUpdateIdCartProduto);
-        $stmtUpdateIdCartProduto->bindParam(':idCart', $cartId);
-        $stmtUpdateIdCartProduto->bindParam(':id_produto', $id_produto);
-        $stmtUpdateIdCartProduto->execute();
-    }else {
-        $sqlInsertIdCartProduto = "INSERT INTO products (cart_id_cart) VALUE (:idCart) WHERE id_products = :idProduto";
-        $stmtInsertIdCartProduto= $connection->prepare($sqlInsertIdCartProduto);
-        $stmtInsertIdCartProduto->bindParam(':idCart', $cartId);
-        $stmtInsertIdCartProduto->bindParam(':idProduto', $id_produto);
-        $stmtInsertIdCartProduto->execute();
-    }
-    header('location: views/buy_page.php');
     $_SESSION['produto_adicionado_carrinho'] = 'Produto adicionado';
+    header('location: views/buy_page.php');
     exit();
 }
-
 ?>

@@ -630,7 +630,7 @@ margin-left: 380px;
 /* Modal Product */ 
 
 .div-modal { 
-background-color:  rgba(86, 59, 1, 0.9); 
+background-color: rgb(228, 149, 2, 0.8);
 position: absolute;
 width: 60%;
 left: 50%;
@@ -639,6 +639,8 @@ border-radius: 5px;
 display: flex;
 flex-direction: column;
 }
+
+/* rgba(180, 123, 0, 0.9);  */
 
 .modalProduct {
   display: flex;
@@ -682,8 +684,8 @@ flex-direction: column;
   color: white;
 }
 
-.nome-product-modal {
-  font-size: 20px;
+.nome-product-modal input{
+  font-size: 17px;
 }
 
 .nome-category-modal input{
@@ -718,7 +720,6 @@ flex-direction: column;
   outline: none;
   border: none;
   background-color: white;
-  border: 2px solid#3C3B3B;
   cursor: pointer;
   color: #8D6100;
   font-size: 14px; 
@@ -740,7 +741,6 @@ flex-direction: column;
   outline: none;
   border: none;
   background-color: white;
-  border: 2px solid#3C3B3B;
   cursor: pointer;
   color: #8D6100;
   font-size: 14px; 
@@ -758,7 +758,6 @@ flex-direction: column;
 
 .descricao-modal {
   width: 100%;
-  margin-top: 60px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -771,8 +770,8 @@ flex-direction: column;
   outline: none;
   border: 2px solid white;
   border-radius: 5px;
-  background-color: transparent;
-  color: whitesmoke;
+  background-color: white;
+  color: #8D6100;
   text-align: center;
   box-sizing: border-box;
 }
@@ -785,58 +784,54 @@ flex-direction: column;
   justify-content:center;
 }
 
-.ceta-back {
-  padding: 6px 20px 6px 20px;
-  background-color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 15px;
-}
-
-.ceta-back:hover {
-  border: none;
-  color: white;
-  background-color: #3C3B3B;
-}
-
 .ceta {
-  padding: 6px 20px 6px 20px;
   background-color: white;
-  border-radius: 5px;
+  padding: 13px 40px;
+  border-radius: 3px;
   cursor: pointer;
-}
-
-.ceta:hover {
   border: none;
-  color: white;
-  background-color: #3C3B3B;
 }
 
-.bx-arrow-back, .bx-cart-add { 
-  font-size: 20px;
+.ceta:hover{
+ background-color: #3C3B3B;
+}
+
+.ceta:hover i {
+  color: white;
+}
+
+.ceta button {
+  border: none;
+  background-color: transparent;
+}
+
+.bx-cart-add {
+  border: none;
+  outline: none;
 }
 
 .button-link-modal {
-  width: 40%;
-  gap: 20px;
-  display: flex;
-  background-color: pink;
+ display: flex;
+ gap: 20px;
 }
 
-.button-link-modal button{
-  padding: 10px;
-  width: 100%;
-  border-radius: 5px;
-  border: none;
-  outline: none;
+.button-link-form button{
   background-color: white;
+  padding: 14px 40px;
+  border-radius: 3px;
+  border: none;
   cursor: pointer;
+  color: #8D6100;
 }
 
-.button-link-modal button:hover {
-  border: none;
-  color: white;
+.button-link-form button:hover {
   background-color: #3C3B3B;
+  color: white;
+}
+
+.bx-arrow-back, .bx-cart-add { 
+  font-size: 15px;
+  color: #8D6100;
 }
 
 @media (max-width: 1514px) {

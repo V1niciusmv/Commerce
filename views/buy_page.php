@@ -54,6 +54,18 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
                         echo '<p class="sessionGreen">' . $_SESSION['produto_carro_deletado'] . '</p>';
                         unset($_SESSION['produto_carro_deletado']);
                     } ?>
+                    <?php if (isset($_SESSION['estoqueMenorQuantidade'])) {
+                        echo '<p class="sessionGreen">' . $_SESSION['estoqueMenorQuantidade'] . '</p>';
+                        unset($_SESSION['estoqueMenorQuantidade']);
+                    } ?>
+                    <?php if (isset($_SESSION['compra_finalizada'])) {
+                        echo '<p class="sessionGreen">' . $_SESSION['compra_finalizada'] . '</p>';
+                        unset($_SESSION['compra_finalizada']);
+                    } ?>
+                    <?php if (isset($_SESSION['erro_email'])) {
+                        echo '<p class="sessionGreen">' . $_SESSION['erro_email'] . '</p>';
+                        unset($_SESSION['erro_email']);
+                    } ?>
                     <div class="product-buyPage">
                         <div class="img_product">
                             <img src=" ../<?= $produto['caminho_img'] ?>">
@@ -91,20 +103,50 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
                 <?php endforeach ?>
             </div>
             <div class="div2">
-                <div class="vendas">
-                    <h1>Vendas</h1>
-                    <?php foreach ($produtosCarrinho as $produto): ?>
-                        <div class="quant">
-                            <span class="quantidadeVenda" id="quantidadeVenda-<?= $produto['id_products'] ?>"></span>
-                            <span> <?= $produto['nome_products'] ?> </span>
+                <form class="form-div2" action="../vendas.php" method="POST">
+                    <div class="vendas">
+                        <h1>Vendas</h1>
+                        <?php foreach ($produtosCarrinho as $produto): ?>
+                            <input type="hidden" name="id_product[]" value="<?= $produto['id_products'] ?>">
+
+                            <input type="hidden" name="quantidade_product[<?= $produto['id_products'] ?>]" id="quantidade_<?= $produto['id_products'] ?>" value="<?= $produto['quantity'] ?>">
+
+                            <div class="quant">
+                                <span class="quantidadeVenda" id="quantidadeVenda-<?= $produto['id_products'] ?>"></span>
+                                <span> <?= $produto['nome_products'] ?> </span>
+                            </div>
+                        <?php endforeach ?>
+                    </div>
+                    <div class="radio-container">
+                        <div>
+                            <label> Pix </label>
+                            <input type="radio" name="input-pix" value="pix" id="pix">
                         </div>
-                    <?php endforeach ?>
-                </div>
-                <div class="total">
-                    <h3>Total do Carrinho: </h3>
-                    <span id="totalCarrinho">0,00</span>
-                    <p> Finalizar compra </p>
-                </div>
+                        <div>
+                            <label> Debite</label>
+                            <input type="radio" name="input-pix" value="debite" id="cartaoDeDebito">
+                        </div>
+                        <div class="creditoRelative">
+                            <label> Credito </label>
+                            <input type="radio" name="input-pix" value="credito" id="cartaoDeCredito">
+                            <div id="parcelamento" style="display : none;">
+                                <select name="select-parcelamento">
+                                    <option disabled selected> Escolha as parcelas </option>
+                                    <option value="1">1x sem juros</option>
+                                    <option value="2">2x sem juros</option>
+                                    <option value="3">3x sem juros</option>
+                                    <option value="4">4x com juros</option>
+                                    <option value="5">5x com juros</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="total">
+                        <h3>Total do Carrinho: </h3>
+                        <span id="totalCarrinho">0,00</span>
+                        <button type="submit" name="div2"> Finalizar compra </button>
+                    </div>
+                </form>
             </div>
         <?php else: ?>
             <div class="opti">
@@ -150,20 +192,20 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
             const totalCarrinhoElement = document.getElementById('totalCarrinho');
             const totalQuantidadeVenda = document.getElementById('quantidadeVenda');
 
-            
+
             window.addEventListener("DOMContentLoaded", () => {
-                    const quantidadesSalvas = JSON.parse(localStorage.getItem("quantidadesProdutos")) || {};
+                const quantidadesSalvas = JSON.parse(localStorage.getItem("quantidadesProdutos")) || {};
 
-                    const quantidades = document.querySelectorAll('#quantity');
-                    quantidades.forEach((input, index) => {
-                        const produtoId = produtos[index].id_products;
+                const quantidades = document.querySelectorAll('#quantity');
+                quantidades.forEach((input, index) => {
+                    const produtoId = produtos[index].id_products;
 
-                        if (quantidadesSalvas[produtoId] !== undefined) {
-                            input.value = quantidadesSalvas[produtoId];
-                        }
-                    });
-                    calcularTotal(); 
+                    if (quantidadesSalvas[produtoId] !== undefined) {
+                        input.value = quantidadesSalvas[produtoId];
+                    }
                 });
+                calcularTotal();
+            });
 
             function calcularTotal() {
                 let total = 0;
@@ -187,9 +229,14 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
                     }
 
                     quantidadesSalvas[produtoId] = quantidade;
+
+                    const campoQuantidade = document.getElementById(`quantidade_${produtoId}`);
+                    if (campoQuantidade) {
+                        campoQuantidade.value = quantidade;
+                    }
                 });
                 localStorage.setItem("quantidadesProdutos", JSON.stringify(quantidadesSalvas));
-    
+
                 totalCarrinhoElement.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
             }
 
@@ -213,6 +260,16 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
                 });
             });
         }
+
+        document.getElementById('cartaoDeCredito').addEventListener('click', function () {
+            document.getElementById('parcelamento').style.display = 'flex';
+        });
+        document.querySelectorAll('#cartaoDeDebito, #pix').forEach(radio => {
+            radio.addEventListener('click', () => {
+                document.getElementById('parcelamento').style.display = 'none';
+            });
+        });
     </script>
 </body>
+
 </html>

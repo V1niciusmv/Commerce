@@ -40,7 +40,7 @@ session_start();
                         <input type="password" name="senha" required>
                         <i class="bx bx-lock"></i>
                     </div>
-                    <div class="lg">
+                    <div class="lg-button">
                         <button type="submit" name="login_usuario"> Entrar </button>
                     </div>
                 </form>
@@ -103,7 +103,7 @@ session_start();
                     <div class="esqueci-senha">
                         <a href="#"> Esqueci minha senha </a>
                     </div>
-                    <div class="rg">
+                    <div class="rg-button">
                         <button type="submit" name="cadastrar_usuario"> cadastrar </button>
                     </div>
                 </form>

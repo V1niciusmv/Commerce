@@ -163,7 +163,7 @@ if ($stmt->rowCount() > 0) {
                             <i class='bx bx-arrow-back'></i>
                         </div>
                         <div class="button-link-modal">
-                            <form action="../cart.php" method="POST">
+                            <form class="button-link-form" action="../cart.php" method="POST">
                                 <input type="hidden" name="id_produto" id="modal-id-product-comprar">
                                 <button type="submit"> Comprar </button>
                             </form>
@@ -173,6 +173,7 @@ if ($stmt->rowCount() > 0) {
                                     <input type="hidden" name="id_produto" id="modal-id-product-adicionar">
                                     <button type="submit"><i class='bx bx-cart-add'></i></button>
                                 </form>
+
                             </div>
                         </div>
                     </div>

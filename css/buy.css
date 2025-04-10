@@ -70,7 +70,8 @@ input[type="number"]::-webkit-inner-spin-button {
     width: 130px;
 }
 
-.nome-product input, .nome-category input {
+.nome-product input,
+.nome-category input {
     background-color: transparent;
     text-align: center;
     outline: none;
@@ -82,11 +83,12 @@ input[type="number"]::-webkit-inner-spin-button {
 #nome-pro {
     font-size: 20px;
 }
-#cat-pro{
+
+#cat-pro {
     font-size: 14px;
 }
 
-.priceEestoque{
+.priceEestoque {
     display: flex;
     gap: 8px;
 }
@@ -108,7 +110,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .dollar p {
     color: green;
-    font-weight:bold;
+    font-weight: bold;
     text-align: center;
 }
 
@@ -118,7 +120,7 @@ input[type="number"]::-webkit-inner-spin-button {
     justify-content: center;
 }
 
-.quantidade input{
+.quantidade input {
     outline: none;
     border: none;
     width: 10px;
@@ -133,7 +135,8 @@ input[type="number"]::-webkit-inner-spin-button {
     color: #8D6100;
     cursor: pointer;
 }
-.bx-minus{
+
+.bx-minus {
     font-size: 20px;
     color: #8D6100;
     cursor: pointer;
@@ -156,79 +159,132 @@ input[type="number"]::-webkit-inner-spin-button {
 
 
 @media (max-width : 1208px) {
-   .buttons {
-    min-width: 116px;
-   }
-    
- }
+    .buttons {
+        min-width: 116px;
+    }
+
+}
 
 @media (max-width : 1027px) {
-   .u {
-    display: flex;
-    justify-content: space-around;
-   }
+    .u {
+        display: flex;
+        justify-content: space-around;
+    }
 }
 
 @media (max-width : 755px) {
     .u {
-     display: flex;
-     justify-content: space-evenly;
-     flex-direction: column;
-     gap: 10px;
-    }
- }
-    .div2 {
-        width: 30%;
-        height: 100%;
-       display: flex;
-       flex-direction: column;
-       align-items: center;
-       background-color: #E49502;
-       text-align: center;
-       margin: 1px;
-       color: white;
-       border-radius: 3px;
-    }
-
-    .vendas {
-        width: 100%;
-    }
-    
-    .quant {
         display: flex;
+        justify-content: space-evenly;
+        flex-direction: column;
+        gap: 10px;
     }
+}
 
-    .vendas span{
-       width: 100%;
-       padding-top: 10px;
-       font-size: 18px;
-    }
+.div2 {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #E49502;
+    text-align: center;
+    margin: 1px;
+    padding: 10px;
+    color: white;
+    border-radius: 3px;
+}
 
-    .quantidadeVenda {
-        color: red;
-    }
+.vendas {
+    width: 100%;
+}
 
-    .total {
-        width: 50%;
-        margin-top: 40px;
-    }
+.quant {
+    display: flex;
+}
 
-    .total p{
-       padding: 10px;
-       width: 100%;
-       background-color: #8D6100;
-       border-radius: 5px;
-       cursor: pointer;
-    }
+.vendas span {
+    width: 100%;
+    padding-top: 10px;
+    font-size: 18px;
+}
 
-    .total p:hover {
-        background-color: green;
-    }
+.radio-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+    display: flex;
+    gap: 30px;
+}
 
-    .total span {
-        color: green;
-        font-weight: bolder;
-    }
+.radio-container input {
+    cursor: pointer;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border: 2px solid white;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+.radio-container input:hover {
+    background-color: green;
+}
+
+.radio-container input:checked{
+    background-color: green;
+    border-color: white;
+}
+
+.quantidadeVenda {
+    color: red;
+}
+
+.creditoRelative {
+    position: relative;
+    box-sizing: border-box;
+}
+
+#parcelamento{
+position: absolute;
+width: 100%;
+}
+#parcelamento select{
+    outline: none;
+    border: none;
+    border-radius: 3px;
+    padding: 5px;
+    width: 100%;
+}
+
+.total {
+    width: 100%;
+    margin-top: 40px;
+}
+
+.total button{
+    padding: 10px;
+    width: 100%;
+    background-color: #8D6100;
+    border-radius: 5px;
+    cursor: pointer;
+   outline: none;
+   border: none;
+   color: white;
+   margin-top: 2px;
+}
+
+.total button:hover {
+    background-color: green;
+}
+
+.total span {
+    color: green;
+    font-weight: bolder;
+}
 
 .opti {
     display: flex;
@@ -253,6 +309,12 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .opti button:hover {
     color: white;
-        background-color: #3C3B3B;
+    background-color: #3C3B3B;
 }
 
+@media (max-width : 1108px) {
+   .radio-container {
+    display: flex;
+    gap: 15px;
+   }
+}
