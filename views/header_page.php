@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
 require_once '../bd/connection.php';
 
 $rotas = [
@@ -49,8 +52,22 @@ $totalProdutos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
       }
       ?>
     </div>
+
     <?php if ($paginaAtual === 'buy_page.php') 
         echo "<h1> Carrinho de compras </h1>";
+      ?>
+
+      <?php 
+       $paginaSemSearch = ['welcome_page.php', 'register_page.php'];
+      
+      if(!in_array(basename($_SERVER['PHP_SELF']), $paginaSemSearch)) {
+        echo '<div class="search">
+      <input type="search" id="search-id-input">
+      <i class="bx bx-search"></i>
+      <div id="resultadosBusca" class="search-results">
+      </div>
+    </div>';
+      }
       ?>
     <?php if (!isset($_SESSION['user_id'])): ?>
       <div class="links-header">
@@ -60,12 +77,6 @@ $totalProdutos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
       </div>
     <?php else: ?>
       <?php if ($paginaAtual != 'buy_page.php'): ?>
-      <div class="search">
-        <input type="search" id="search-id-input">
-        <i class='bx bx-search'></i>
-        <div id="resultadosBusca" class="search-results">
-        </div>
-      </div>
       <div class="link-header-home">
         <div class="cart">
           <i class='bx bx-cart' onclick="window.location.href='buy_page.php'"></i>
@@ -92,20 +103,25 @@ $totalProdutos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     <?php endif ?>
   </div>
   <script>
-    function dropDown() {
-      const modal = document.getElementById('id-dropdown');
-
-      if (modal.classList.contains('show')) {
-        modal.classList.remove('show');
-      } else {
-        modal.classList.add('show');
+    const userLogado = <?= isset($_SESSION['user_id']) ? 'true' : 'false' ?>;
+    if (userLogado) {
+      function dropDown() {
+        const modal = document.getElementById('id-dropdown');
+  
+        if (modal.classList.contains('show')) {
+          modal.classList.remove('show');
+        } else {
+          modal.classList.add('show');
+        }
       }
+      document.getElementById('id-dropdown').addEventListener('click', function (event) {
+        event.stopPropagation();
+      });
     }
-    document.getElementById('id-dropdown').addEventListener('click', function (event) {
-      event.stopPropagation();
-    });
 
-    document.getElementById('search-id-input').addEventListener('input', function () {
+    const searchInput = document.getElementById('search-id-input');
+    if (searchInput) {
+    searchInput.addEventListener('input', function () {
   const itens = this.value.trim();
   const iconSearch = document.getElementById('resultadosBusca');
 
@@ -155,6 +171,7 @@ $totalProdutos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
       }
     });
 });
+    }
   </script>
 </body>
 </html>

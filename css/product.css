@@ -53,13 +53,7 @@ body {
   flex-wrap: wrap;
   padding: 20px 0px 15px 20px;
   position: relative;
-}
-
-@media (max-width: 743px) {
-  .show-products {
-    display: flex;
-    justify-content: center;
-  }
+  justify-content: center;
 }
 
 .product {
@@ -111,6 +105,7 @@ body {
   background: none;
   font-size: 10px;
   color: #6f4c00;
+  outline: none;
 }
 
 .priceEestoque {

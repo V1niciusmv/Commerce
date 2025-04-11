@@ -42,6 +42,14 @@ input::-ms-clear {
 
 .font-header{
     color: white;
+    cursor: pointer;
+}
+
+@media (max-width: 700px ) {
+    .links-header {
+        display: flex;
+        gap: 30px;
+    }
 }
 
 .search {

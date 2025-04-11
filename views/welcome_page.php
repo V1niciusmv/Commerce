@@ -26,7 +26,7 @@ $endereco_loja = 'Campus Aurora';
                     que você só vai encontrar aqui! Explore sabores únicos e autênticos, <br>
                     ideais para transformar qualquer receita em uma experiência especial.</p>
                     <div class="frase-button">
-                        <button onclick="window.location.href=''"> Entrar </button>
+                        <button onclick="window.location.href='home_page.php'"> Entrar </button>
                     </div>
             </div>
         </div>
@@ -79,15 +79,20 @@ $endereco_loja = 'Campus Aurora';
     </footer>
 
     <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const radio1 = document.getElementById('radio1');
+    if (radio1) {
         let counter = 1;
         setInterval(() => {
-            document.getElementById('radio' + counter).checked = true;
-            counter++;
-            if (counter > 4) {
-                counter = 1;
+            const radio = document.getElementById('radio' + counter);
+            if (radio) {
+                radio.checked = true;
+                counter = counter < 4 ? counter + 1 : 1;
             }
-        }, 2000); // Muda a cada 2 segundos
-    </script>
+        }, 2000);
+    }
+});
+</script>
 </body>
 
 </html>

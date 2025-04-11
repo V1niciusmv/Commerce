@@ -1,11 +1,6 @@
 <?php
 require_once '../bd/connection.php';
 
-if (!isset($_SESSION['user_id'])) {
-    header('location: register_page.php?action=login');
-    exit();
-}
-
 if (isset($_SESSION['idProduto'])) {
     $query = $_SESSION['idProduto'];
     unset($_SESSION['idProduto']);
@@ -165,15 +160,14 @@ if ($stmt->rowCount() > 0) {
                         <div class="button-link-modal">
                             <form class="button-link-form" action="../cart.php" method="POST">
                                 <input type="hidden" name="id_produto" id="modal-id-product-comprar">
-                                <button type="submit"> Comprar </button>
+                                <button type="button" onclick="verificarUser(event)"> Comprar </button>
                             </form>
 
                             <div class="ceta">
                                 <form id="id-form-cart-add" action="../cartAddBuy.php" method="POST">
                                     <input type="hidden" name="id_produto" id="modal-id-product-adicionar">
-                                    <button type="submit"><i class='bx bx-cart-add'></i></button>
+                                    <button type="button" onclick="verificarUser(event)"><i class='bx bx-cart-add'></i></button>
                                 </form>
-
                             </div>
                         </div>
                     </div>

@@ -9,6 +9,19 @@
     height: 100vh;
  }
 
+ .back-icon {
+    position: absolute; 
+    top: 90px;
+    left: 80px;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.back-icon i {
+font-size: 60px;
+color: #8D6100;
+}
+
 .container-full {
     width: 100%;
     height: 100%;
@@ -16,6 +29,7 @@
     justify-content: center;
     align-items: center;
     background-color: #ffffff;
+    position: relative;
  }
 
  .form-full{
@@ -190,4 +204,10 @@ p{
 .mensagem-sessao-vazia, .mensagem-sessao, .usado{
     color: red;
     text-align: center;
+}
+
+@media (max-width: 868px) {
+    h1 {
+        font-size: 23px;
+    }
 }

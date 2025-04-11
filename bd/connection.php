@@ -4,11 +4,10 @@ define ('USUARIO', 'root');
 define ('SENHA', 'mk16');
 define ('DB', 'commerce');
 
-$email ='DragonCommerce@gmail.com';
+$email ='Commerce@gmail.com';
 $telefone ='(81) 7901-4191';
 $whatsapp ='(81) 7901-4191';
-$nome_loja='Dragon Commerce';
-$texto_destaque = 'Todos os dragões em promoção!';
+$nome_loja='Commerce';
 $endereco_loja ='Campus Aurora';
 
 try {

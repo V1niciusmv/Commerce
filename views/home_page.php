@@ -1,10 +1,6 @@
 <?php
 session_start();
 require '../bd/connection.php';
-if (!isset($_SESSION['user_id'])) {
-    header('location: register_page.php?action=login');
-    exit();
-}
 
 $sql = "SELECT COUNT(*) FROM products WHERE users_id_users = :id_user";
 $stmt = $connection->prepare($sql);
@@ -129,9 +125,21 @@ if ($existeProduto > 0) {
             document.getElementById('modalProduct').style.display = 'none';
         }
 
-        document.getElementById('add-carrinho').addEventListener("click", function () {
-            document.getElementById('id-form-cart-add').submit();
-        })
+        const veriUserOn =  <?= (isset($_SESSION['user_id'])) ? 'true' : 'false' ?>;
+        if (veriUserOn) {
+            document.getElementById('add-carrinho').addEventListener("click", function () {
+                document.getElementById('id-form-cart-add').submit();
+            })
+        }
+        
+        const veriUser =  <?= (!isset($_SESSION['user_id'])) ? 'true' : 'false' ?>;
+        function verificarUser(event) {
+          if (veriUser) {
+            window.location.href='register_page.php'; 
+            return;
+          }
+            event.target.closest('form').submit();
+        }
     </script>
 </body>
 

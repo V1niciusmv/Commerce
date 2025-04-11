@@ -7,12 +7,15 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/register.css">
-    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
     <title>registrar/entrar</title>
 </head>
 <body>
     <?php include('header_page.php'); ?>
     <div class="container-full">
+    <div class="back-icon" onclick="window.history.back()">
+    <i class='bx bx-chevron-left'></i>
+</div>
         <div class="form-full">
             <div class="form-login">
                 <form action="../login.php" method="POST" id="form-id-login">
