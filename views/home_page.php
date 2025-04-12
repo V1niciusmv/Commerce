@@ -36,7 +36,7 @@ if ($existeProduto > 0) {
                 echo '<p class="sessionRed ">' . $_SESSION['produto_no_carrinho'] . '</p>';
                 unset($_SESSION['produto_no_carrinho']);
             } ?>
-              <?php if (isset($_SESSION['Existe_produtoAdd'])) {
+            <?php if (isset($_SESSION['Existe_produtoAdd'])) {
                 echo '<p class="sessionRed ">' . $_SESSION['Existe_produtoAdd'] . '</p>';
                 unset($_SESSION['Existe_produtoAdd']);
             } ?>
@@ -125,19 +125,24 @@ if ($existeProduto > 0) {
             document.getElementById('modalProduct').style.display = 'none';
         }
 
-        const veriUserOn =  <?= (isset($_SESSION['user_id'])) ? 'true' : 'false' ?>;
+        const veriUserOn = <?= (isset($_SESSION['user_id'])) ? 'true' : 'false' ?>;
+        const addCarrinhoBtn = document.getElementById('add-carrinho');
+
         if (veriUserOn) {
-            document.getElementById('add-carrinho').addEventListener("click", function () {
-                document.getElementById('id-form-cart-add').submit();
-            })
+            if (addCarrinhoBtn) {
+                addCarrinhoBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.getElementById('id-form-cart-add').submit();
+                });
+            }
         }
-        
-        const veriUser =  <?= (!isset($_SESSION['user_id'])) ? 'true' : 'false' ?>;
+
+        const veriUser = <?= (!isset($_SESSION['user_id'])) ? 'true' : 'false' ?>;
         function verificarUser(event) {
-          if (veriUser) {
-            window.location.href='register_page.php'; 
-            return;
-          }
+            if (veriUser) {
+                window.location.href = 'register_page.php';
+                return;
+            }
             event.target.closest('form').submit();
         }
     </script>
