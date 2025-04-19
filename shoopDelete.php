@@ -13,7 +13,7 @@ if (isset($_POST['deletar_loja'])) {
     $resultIdLoja = $stmt->fetchColumn();
     if($resultIdLoja > 0) {
         $_SESSION['produto_apagar'] =  'Para apagar a loja, você deve apagar os produtos primeiro';
-        header ("location: ../views/shoop_page.php");
+        header ("location: views/shoop_page.php");
         exit();
     }
 
@@ -25,10 +25,10 @@ if (isset($_POST['deletar_loja'])) {
     $sqlLoja = "DELETE FROM loja WHERE id_loja = :id_loja";
     $stmtLoja = $connection->prepare($sqlLoja);
     $stmtLoja->bindParam(':id_loja', $idLoja);
-    $stmtLoja->execute();
-
+    $stmtLoja->execute();       
+    
     $_SESSION['loja_deletada'] ="Loja deletada com sucesso";
-    header ('location: ../views/shoop_page.php');
+    header ('location: views/shoop_page.php');
     exit();
 }
 ?>

@@ -83,6 +83,13 @@ if ($valorProduto > 10000) {
     $stmtCategoria->bindParam(':id_categoria', $idCategoria['category_id_category']);
     $stmtCategoria->execute();
 
+    if ($estoqueProduto > 0 && $resultProdut['estoque_products'] <= 0) {
+        $sqlUpdateAtivo = " UPDATE products SET ativo = 1 WHERE id_products = :idProduto";
+        $stmtUpdateAtivo = $connection->prepare($sqlUpdateAtivo);
+        $stmtUpdateAtivo->bindParam(':idProduto', $idProduto);
+        $stmtUpdateAtivo->execute();
+    }
+
     $sql = "UPDATE products SET nome_products = :nome, valor_products = :valor, estoque_products = :estoque, descricao_products = :descricao 
     WHERE id_products = :id_produto";
     $stmt = $connection->prepare($sql);

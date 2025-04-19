@@ -18,11 +18,12 @@ $sql = "SELECT products.*, imagens.caminho_img, loja.nome_loja, category.nome_ca
 
 if ($page == 'home_page.php') {
     if ($query) {
-        $sql .= " WHERE products.id_products = :query";
+        $sql .= " WHERE products.id_products = :query AND products.ativo = 1";
         $stmt = $connection->prepare($sql);
         $stmt->bindParam(':query', $query);
         
     } else {
+        $sql .= " WHERE products.ativo = 1";
         $stmt = $connection->prepare($sql);
     }
 } elseif ($page === 'product_page.php') {

@@ -5,7 +5,7 @@ require 'bd/connection.php';
 if (isset($_GET['query'])) {
   $query = $_GET['query'];
 
-  $sql = "SELECT id_products, nome_products FROM products WHERE nome_products LIKE :query 
+  $sql = "SELECT id_products, nome_products FROM products WHERE nome_products LIKE :query AND ativo = 1
   ORDER BY nome_products COLLATE utf8mb4_general_ci ASC";
 $stmt = $connection->prepare($sql);
 $stmt->bindValue(':query', "$query%");
