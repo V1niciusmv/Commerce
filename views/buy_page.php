@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 require '../bd/connection.php';
@@ -67,6 +68,10 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
                         unset($_SESSION['erro_email']);
                     } ?>
                     <div class="product-buyPage">
+                        <div class="product-select">
+                        <input type="checkbox" name="selected_products[]" value="<?= $produto['id_products'] ?>"
+                        class="product-checkbox" id="checkbox_<?= $produto['id_products'] ?>" checked>
+                        </div>
                         <div class="img_product">
                             <img src=" ../<?= $produto['caminho_img'] ?>">
                         </div>
@@ -88,8 +93,11 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
                             </div>
                             <div class="quantidade">
                                 <i id="less" class='bx bx-minus'></i>
-                                <input type="number" id="quantity" name="quantidade" value="<?= $produto['quantity'] ?>">
-                                <i id="more" class='bx bx-plus'></i>
+                                <input type="number" id="quantity" name="quantidade" value="<?= $produto['quantity'] ?>"
+                                    data-product-id="<?= $produto['id_products'] ?>"
+                                    data-estoque="<?= $produto['estoque_products'] ?>"
+                                    max="<?= $produto['estoque_products'] ?>">
+                                    <i id="more" class='bx bx-plus'></i>
                             </div>
                             <div class="buttons">
                                 <form action="../cartDelete.php" method="POST" style="display : inline">
@@ -107,30 +115,40 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
                     <div class="vendas">
                         <h1>Vendas</h1>
                         <?php foreach ($produtosCarrinho as $produto): ?>
-                            <input type="hidden" name="id_product[]" value="<?= $produto['id_products'] ?>">
+                            <!-- inputs Hidden -->
+                            <input type="hidden" name="id_product[]" value="<?= $produto['id_products'] ?>"
+                                id="hidden_id_<?= $produto['id_products'] ?>">
 
-                            <input type="hidden" name="quantidade_product[<?= $produto['id_products'] ?>]" id="quantidade_<?= $produto['id_products'] ?>" value="<?= $produto['quantity'] ?>">
+                            <input type="hidden" name="quantidade_product[<?= $produto['id_products'] ?>]"
+                                id="hidden_quant_<?= $produto['id_products'] ?>" value="<?= $produto['quantity'] ?>">
 
-                            <div class="quant">
+                            <div class="quant" id="container-produto-<?= $produto['id_products'] ?>">
                                 <span class="quantidadeVenda" id="quantidadeVenda-<?= $produto['id_products'] ?>"></span>
-                                <span> <?= $produto['nome_products'] ?> </span>
+                                <span id="idSpanQuant"> <?= $produto['nome_products'] ?> </span>
                             </div>
                         <?php endforeach ?>
+                    </div>
+                    <div class="erroParcelaRelative">
+                        <span class="erroParcela" id="erro-parcelas" style="display:none"> Falta quantas vezes você quer
+                            parcelar </span>
                     </div>
                     <div class="radio-container">
                         <div>
                             <label> Pix </label>
-                            <input type="radio" name="input-pix" value="pix" id="pix">
+                            <input type="radio" name="input-pix" value="pix" id="pix" required>
+                            <div class="divpix" id="div-pix" style="display : none">
+                                <span class="spanpix" id="numeroPix"> 81 979014191</span>
+                            </div>
                         </div>
                         <div>
                             <label> Debite</label>
-                            <input type="radio" name="input-pix" value="debite" id="cartaoDeDebito">
+                            <input type="radio" name="input-pix" value="debito" id="cartaoDeDebito" required>
                         </div>
                         <div class="creditoRelative">
                             <label> Credito </label>
-                            <input type="radio" name="input-pix" value="credito" id="cartaoDeCredito">
+                            <input type="radio" name="input-pix" value="credito" id="cartaoDeCredito" required>
                             <div id="parcelamento" style="display : none;">
-                                <select name="select-parcelamento">
+                                <select name="select-parcelamento" required>
                                     <option disabled selected> Escolha as parcelas </option>
                                     <option value="1">1x sem juros</option>
                                     <option value="2">2x sem juros</option>
@@ -144,7 +162,7 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
                     <div class="total">
                         <h3>Total do Carrinho: </h3>
                         <span id="totalCarrinho">0,00</span>
-                        <button type="submit" name="div2"> Finalizar compra </button>
+                        <button id="finalizarCompraButton" type="submit" name="div2"> Finalizar compra </button>
                     </div>
                 </form>
             </div>
@@ -155,31 +173,31 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
             </div>
         <?php endif ?>
     </div>
-    <script>
-        const verificarSeTem = <?php echo count($produtosCarrinho) > 0 ? 'true' : 'false'; ?>;
-        if (verificarSeTem) {
-            const categorias = {
-                1: "Eletrônicos",
-                2: "Comidas",
-                3: "Bebidas",
-                4: "Roupas",
-                5: "Acessórios",
-                6: "Móveis",
-                7: "Brinquedos",
-                8: "Livros",
-                9: "Ferramentas",
-                10: "Beleza e Cuidados",
-                11: "Esportes",
-                12: "Saúde",
-                13: "Automotivo",
-                14: "Casa e Decoração",
-                15: "Jardinagem",
-                16: "Tecnologia",
-                17: "Higiene",
-                18: "Informática"
-            };
+      <script>
+    const verificarSeTem = <?php echo count($produtosCarrinho) > 0 ? 'true' : 'false'; ?>;
+    if (verificarSeTem) {
+        const categorias = {
+            1: "Eletrônicos",
+            2: "Comidas",
+            3: "Bebidas",
+            4: "Roupas",
+            5: "Acessórios",
+            6: "Móveis",
+            7: "Brinquedos",
+            8: "Livros",
+            9: "Ferramentas",
+            10: "Beleza e Cuidados",
+            11: "Esportes",
+            12: "Saúde",
+            13: "Automotivo",
+            14: "Casa e Decoração",
+            15: "Jardinagem",
+            16: "Tecnologia",
+            17: "Higiene",
+            18: "Informática"
+        };
 
-            const inputsCategoria = document.querySelectorAll('#cat-pro');
+        const inputsCategoria = document.querySelectorAll('#cat-pro');
             inputsCategoria.forEach(input => {
                 const categoriaId = input.value;
 
@@ -188,88 +206,186 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
                 }
             });
 
-            const produtos = <?= json_encode($produtosCarrinho) ?>;
-            const totalCarrinhoElement = document.getElementById('totalCarrinho');
-            const totalQuantidadeVenda = document.getElementById('quantidadeVenda');
+        const produtos = <?= json_encode($produtosCarrinho) ?>;
+        const totalCarrinhoElement = document.getElementById('totalCarrinho');
 
+        window.addEventListener("DOMContentLoaded", () => {
+            const carrinhoSalvo = JSON.parse(localStorage.getItem("carrinhoAtual")) || {};
+            const quantidades = document.querySelectorAll('#quantity');
+            const checkboxes = document.querySelectorAll('.product-checkbox');
 
-            window.addEventListener("DOMContentLoaded", () => {
-                const quantidadesSalvas = JSON.parse(localStorage.getItem("quantidadesProdutos")) || {};
-
-                const quantidades = document.querySelectorAll('#quantity');
-                quantidades.forEach((input, index) => {
-                    const produtoId = produtos[index].id_products;
-
-                    if (quantidadesSalvas[produtoId] !== undefined) {
-                        input.value = quantidadesSalvas[produtoId];
-                    }
-                });
-                calcularTotal();
+            quantidades.forEach((input, index) => {
+                const produtoId = produtos[index].id_products;
+                if (carrinhoSalvo[produtoId]) {
+                    input.value = carrinhoSalvo[produtoId].quantidade || 0;
+                }
             });
 
-            function calcularTotal() {
-                let total = 0;
-                quantidadesSalvas = {};
-
-                const quantidades = document.querySelectorAll('#quantity');
-                quantidades.forEach((input, index) => {
-                    const produtoId = produtos[index].id_products;
-                    const quantidade = parseInt(input.value) || 0;
-                    const preco = parseFloat(produtos[index].valor_products) || 0;
-
-                    if (isNaN(quantidade) || isNaN(preco)) {
-                        return;
-                    }
-
-                    total += quantidade * preco;
-
-                    const quantidadeElemento = document.getElementById(`quantidadeVenda-${produtoId}`);
-                    if (quantidadeElemento) {
-                        quantidadeElemento.textContent = `x${quantidade}`;
-                    }
-
-                    quantidadesSalvas[produtoId] = quantidade;
-
-                    const campoQuantidade = document.getElementById(`quantidade_${produtoId}`);
-                    if (campoQuantidade) {
-                        campoQuantidade.value = quantidade;
-                    }
-                });
-                localStorage.setItem("quantidadesProdutos", JSON.stringify(quantidadesSalvas));
-
-                totalCarrinhoElement.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-            }
-
-            moreIcons = document.querySelectorAll("#more");
-            lessIcons = document.querySelectorAll("#less");
-            quantityInputs = document.querySelectorAll("#quantity");
-
-            moreIcons.forEach((icon, index) => {
-                icon.addEventListener("click", () => {
-                    let currentQuantity = parseInt(quantityInputs[index].value) || 0;
-                    quantityInputs[index].value = currentQuantity + 1;
-                    calcularTotal();
-                });
+            checkboxes.forEach(checkbox => {
+                const produtoId = checkbox.value;
+                if (carrinhoSalvo[produtoId]) {
+                    checkbox.checked = carrinhoSalvo[produtoId].selecionado;
+                }
             });
 
-            lessIcons.forEach((icon, index) => {
-                icon.addEventListener("click", () => {
-                    let currentQuantity = parseInt(quantityInputs[index].value) || 0;
-                    quantityInputs[index].value = Math.max(0, currentQuantity - 1);
-                    calcularTotal();
-                });
-            });
+            atualizarProdutosSelecionados();
+        });
+
+        function atualizarProdutosSelecionados() {
+    const checkboxes = document.querySelectorAll('.product-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        const productId = checkbox.value;
+        const hiddenId = document.getElementById(`hidden_id_${productId}`);
+        const hiddenQuant = document.getElementById(`hidden_quant_${productId}`);
+        const containerProduto = document.getElementById(`container-produto-${productId}`);
+        const quantityInput = document.querySelector(`#quantity[data-product-id="${productId}"]`);
+
+        // Atualiza sempre, independente do checkbox
+        if (quantityInput && hiddenQuant) {
+            hiddenQuant.value = quantityInput.value;
         }
 
+        if (checkbox.checked) {
+            if (hiddenId) hiddenId.disabled = false;
+            if (containerProduto) containerProduto.style.display = 'flex';
+        } else {
+            if (hiddenId) hiddenId.disabled = true;
+            if (containerProduto) containerProduto.style.display = 'none';
+        }
+    });
+    
+    calcularTotal();
+}
+
+        function calcularTotal() {
+            let total = 0;
+            let temItensValidos = false;
+            const produtosSalvos = {};
+
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+
+            checkboxes.forEach(checkbox => {
+                const productId = checkbox.value;
+                const quantityInput = document.querySelector(`#quantity[data-product-id="${productId}"]`);
+                const produto = produtos.find(p => p.id_products == productId);
+
+                if (quantityInput && produto) {
+                    const quantidade = parseInt(quantityInput.value) || 0;
+                    const preco = parseFloat(produto.valor_products) || 0;
+
+                    if (checkbox.checked && quantidade > 0) {
+                        total += quantidade * preco;
+                        temItensValidos = true;
+                    }
+
+                    // Salvar estado no objeto
+                    produtosSalvos[productId] = {
+                        quantidade: quantidade,
+                        selecionado: checkbox.checked
+                    };
+
+                    const quantidadeElemento = document.getElementById(`quantidadeVenda-${productId}`);
+                    if (quantidadeElemento) quantidadeElemento.textContent = `x${quantidade}`;
+                }
+            });
+
+            localStorage.setItem("carrinhoAtual", JSON.stringify(produtosSalvos));
+            totalCarrinhoElement.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            document.getElementById('finalizarCompraButton').disabled = !temItensValidos;
+        }
+
+        // Atualizar ao clicar nos checkboxes
+        document.querySelectorAll('.product-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', atualizarProdutosSelecionados);
+        });
+
+        // Event listeners dos botões + e -
+        const moreIcons = document.querySelectorAll("#more");
+        const lessIcons = document.querySelectorAll("#less");
+        const quantityInputs = document.querySelectorAll("#quantity");
+
+        moreIcons.forEach((icon, index) => {
+            icon.addEventListener("click", () => {
+                let currentQuantity = parseInt(quantityInputs[index].value) || 0;
+                let maxEstoque = parseInt(quantityInputs[index].dataset.estoque) || 0;
+
+                if (currentQuantity < maxEstoque) {
+                    quantityInputs[index].value = currentQuantity + 1;
+                    calcularTotal();
+                }
+            });
+        });
+
+        lessIcons.forEach((icon, index) => {
+            icon.addEventListener("click", () => {
+                let currentQuantity = parseInt(quantityInputs[index].value) || 0;
+                quantityInputs[index].value = Math.max(1, currentQuantity - 1);
+                calcularTotal();
+            });
+        });
+
+        // Novo: capturar digitação manual no input de quantidade
+        quantityInputs.forEach(input => {
+            input.addEventListener("input", calcularTotal);
+        });
+
+        // Seção de métodos de pagamento
         document.getElementById('cartaoDeCredito').addEventListener('click', function () {
             document.getElementById('parcelamento').style.display = 'flex';
         });
+
         document.querySelectorAll('#cartaoDeDebito, #pix').forEach(radio => {
             radio.addEventListener('click', () => {
                 document.getElementById('parcelamento').style.display = 'none';
+                erroParcelas.style.display = 'none';
             });
         });
-    </script>
+
+        document.getElementById('pix').addEventListener('click', function () {
+            document.getElementById('div-pix').style.display = 'flex';
+        });
+
+        document.querySelectorAll('#cartaoDeDebito, #cartaoDeCredito').forEach(Element => {
+            Element.addEventListener('click', () => {
+                document.getElementById('div-pix').style.display = 'none';
+            });
+        });
+
+        const erroParcelas = document.getElementById('erro-parcelas');
+        document.querySelector('.form-div2').addEventListener('submit', function (e) {
+            const creditoSelecionado = document.getElementById('cartaoDeCredito').checked;
+            const selectParcelas = document.querySelector('select[name="select-parcelamento"]');
+            const selectedProducts = document.querySelectorAll('.product-checkbox:checked');
+
+            localStorage.removeItem('carrinhoAtual');
+
+            if (selectedProducts.length === 0) {
+                e.preventDefault();
+                alert('Selecione pelo menos um produto para finalizar a compra!');
+            }
+
+            if (creditoSelecionado && selectParcelas.selectedIndex <= 0) {
+                e.preventDefault();
+                erroParcelas.style.display = 'flex';
+                selectParcelas.focus();
+            } else {
+                erroParcelas.style.display = 'none';
+            }
+
+            let temItens = false;
+            document.querySelectorAll('#quantity').forEach(input => {
+                if (parseInt(input.value) > 0) temItens = true;
+            });
+
+            if (!temItens) {
+                e.preventDefault();
+                alert('Adicione pelo menos um produto para finalizar a compra!');
+            }
+        });
+    }
+</script>
+
 </body>
 
 </html>

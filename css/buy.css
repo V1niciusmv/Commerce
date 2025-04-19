@@ -8,8 +8,9 @@ body {
     display: none;
 }
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+/* Remove setas no Chrome, Safari, Edge */
+.quantidade input[type="number"]::-webkit-outer-spin-button,
+.quantidade input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
@@ -37,6 +38,18 @@ input[type="number"]::-webkit-inner-spin-button {
     border: solid 1px #8D6100;
     gap: 20px;
     box-sizing: border-box;
+    position: relative;
+}
+
+.product-select {
+position: absolute;
+top: 0;
+right: 0;
+}
+
+.product-checkbox {
+    width: 20px;
+    cursor: pointer;
 }
 
 .u {
@@ -105,7 +118,7 @@ input[type="number"]::-webkit-inner-spin-button {
     color: #8D6100;
     margin-left: 10px;
     text-align: center;
-    width: 50px;
+    width: 60px;
 }
 
 .dollar p {
@@ -117,13 +130,12 @@ input[type="number"]::-webkit-inner-spin-button {
 .quantidade {
     display: flex;
     gap: 20px;
-    justify-content: center;
 }
 
 .quantidade input {
     outline: none;
     border: none;
-    width: 10px;
+    width: 25px;
     color: #8D6100;
     margin-left: 3px;
     font-size: 17px;
@@ -312,9 +324,38 @@ width: 100%;
     background-color: #3C3B3B;
 }
 
+.divpix {
+    background-color: purple;
+    position: relative;
+}
+
+.spanpix {
+    width: 100px;
+    position: absolute;
+    left: -28px;
+    color: white;
+}
+
+.erroParcela {
+    z-index: 10000;
+    color: red;
+    font-weight: bolder;
+}
+
+.erroParcelaRelative {
+    width: 100%;
+  margin-top: 20px;
+}
+
 @media (max-width : 1108px) {
    .radio-container {
     display: flex;
     gap: 15px;
    }
+}
+
+@media (max-width : 982px) {
+    h1,h3{
+    font-size: 15px
+    }
 }
