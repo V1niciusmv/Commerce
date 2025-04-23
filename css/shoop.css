@@ -197,7 +197,7 @@ label .bx-camera {
     padding: 10px;
     width: 100%;
     border-radius: 5px;
-    border: 2px solid #3C3B3B;
+    border: 1px solid #3C3B3B;
     outline: none;
     box-sizing: border-box;
     text-align: center;
@@ -345,7 +345,7 @@ label .bx-camera {
     width: 100%;
     border-radius: 5px;
     outline: none;
-    border: 2px solid #3C3B3B;
+    border: 1px solid #3C3B3B;
     text-align: center;
     box-sizing: border-box;
     color: #8D6100;

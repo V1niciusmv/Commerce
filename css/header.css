@@ -13,6 +13,10 @@ input::-ms-clear {
     display: none;
 }
 
+.logoWebp {
+    border-radius: 45%;
+}
+
 .container-header { 
     max-width: 100%;
     background-color: #E49502;
@@ -84,6 +88,7 @@ input::-ms-clear {
     display: none;
     flex-direction: column;
     align-items: center;
+    z-index: 1000;
 }
 
 .nenhumProduto {

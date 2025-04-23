@@ -46,7 +46,7 @@ $totalProdutos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
       <?php
       $pages = basename($_SERVER['PHP_SELF']);
       if (in_array($pages, ['home_page.php', 'welcome_page.php', 'register_page.php'])) {
-        echo '<img src="/img/logo.png" alt="Logo">';
+        echo '<img class="logoWebp" src="/img/logo.webp" alt="Logo">';
       } else {
         echo "<i class='bx bx-chevron-left' onclick='window.location.href=\"$destino\"'></i>";
       }
