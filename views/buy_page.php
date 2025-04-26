@@ -312,7 +312,7 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
 
                 if (currentQuantity < maxEstoque) {
                     quantityInputs[index].value = currentQuantity + 1;
-                    calcularTotal();
+                    atualizarProdutosSelecionados();
                 }
             });
         });
@@ -321,7 +321,7 @@ $produtosCarrinho = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
             icon.addEventListener("click", () => {
                 let currentQuantity = parseInt(quantityInputs[index].value) || 0;
                 quantityInputs[index].value = Math.max(1, currentQuantity - 1);
-                calcularTotal();
+                atualizarProdutosSelecionados();
             });
         });
 

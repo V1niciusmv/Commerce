@@ -1,6 +1,14 @@
 <?php
 session_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require 'bd/connection.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'vendor/autoload.php'; 
 
 if (isset($_POST['div2'])) {
     $idProduct = $_POST['id_product'];
@@ -43,9 +51,10 @@ $stmtIdCart->execute();
 $idCart = $stmtIdCart->fetch(PDO::FETCH_ASSOC);
 
 /* Pegando os dados dos produtos,loja,itensNoCarrinho */
-$sqlProdutos = "SELECT products.id_products, products.nome_products, products.valor_products, products.estoque_products, loja.id_loja, loja.nome_loja
+$sqlProdutos = "SELECT products.id_products, products.nome_products, products.valor_products, products.estoque_products, imagens.caminho_img, loja.id_loja, loja.nome_loja
 FROM cart_items
 INNER JOIN products ON cart_items.product_id = products.id_products
+INNER JOIN imagens ON imagens.produtos_id_products = products.id_products
 INNER JOIN loja ON products.loja_id_loja = loja.id_loja
 WHERE cart_items.product_id IN ($placeholders)";
 $stmtProdutos = $connection->prepare($sqlProdutos);
@@ -114,25 +123,63 @@ try {
     }
     $connection->commit();
 
-    $assunto = "Confirmação de compra - " . $transacaoVendas;
-    $mensagem = "Olá!" . $nomeUser['nome_users'] . "sua compra foi realizada com sucesso.\n";
-    $mensagem .= "Detalhes da sua compra:\n";
+    $mail = new PHPMailer(true);
 
-    foreach ($dadosProdutos as $dados) {
-        $mensagem .= "-" . $dados['nome_products'] . "(Quantidade:" . $dados['quantity'] . ") - R$ " . $dados['valor_products'] . "\n";
-    }
+    try {
+        // Configurações do servidor SMTP
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'viniciusifpe352@gmail.com'; // Seu e-mail
+        $mail->Password = 'sahb nrha fsud lvku'; // senha 
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+        $mail->CharSet = 'UTF-8';
 
-    $mensagem .= "\n Total: R$" . number_format($totalCompra, 2, ',', '.') . "\n";
-    $mensagem .= "Obrigado por comprar em nossa loja!";
+        // Remetente e destinatário
+        $mail->setFrom('viniciusifpe352@gmail.com', 'Commerce');
+        $mail->addAddress($idEmail['email_users'], $nomeUser['nome_users']);
 
-    $headers = "From: loja@commerce.com\r\n";
-    $headers .= "Reply-To: suporte@commerce.com\r\n";
-    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";    
+        // Assunto e corpo do e-mail
+        $mail->Subject = "Confirmação de compra - " . $transacaoVendas;
 
-    if (mail($idEmail['email_users'], $assunto, $mensagem, $headers)) {
-        $_SESSION['compra_finalizada'] = "Compra finalizada com sucesso";
-    }else {
-        $_SESSION['erro_email'] = "Compra finalizada, erro no envio do email"; 
+        $mail->isHTML(true);
+
+        $mensagem = "<html> <body>";
+        $mensagem .= "<header style='background-color: #E49502; padding: 50px;'> </header>";
+        $mensagem .= "<div style='padding: 20px; display: flex; justify-content: center; flex-direction: column; background-color: white; width='100'; height='100';'>";
+        $mensagem .= " <h3> Olá " . $nomeUser['nome_users'] . ", sua compra foi realizada com sucesso. </h3> <br>";
+        $mensagem .= " <h4> Detalhes da sua compra: </h4> <br>";
+    
+        foreach ($dadosProdutos as $dados) {
+
+            $caminhoImagem = __DIR__ . '/' . $dados['caminho_img'];
+            if (file_exists($caminhoImagem)) {
+                $mail->addEmbeddedImage($caminhoImagem, 'produto_' . $dados['id_products']);
+            } else {
+                error_log("Imagem não encontrada: " . $caminhoImagem);
+            }
+
+            $mensagem .= "<div style=' display:flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width='100'; height='auto';'>";
+            $mensagem .= "<img src='cid:produto_" . $dados['id_products'] ."' width='100' height='auto'>";
+            $mensagem .= "<p>" . $dados['nome_products'] . "</p>";
+            $mensagem .= "<p> (Quantidade:" . $quantidade . ") - R$ " . 
+                         number_format($dados['valor_products'], 2, ',', '.') . " </p> </div> <br>";
+
+                    
+        }
+    
+        $mensagem .= "<p> Total: R$" . number_format($totalCompra, 2, ',', '.') . "</p> <br>";
+        $mensagem .= "<h3> Obrigado por comprar em nossa loja! </h3>";
+        $mensagem .= "</div>";
+        $mensagem .= "<div style='background-color: #E49502; padding: 50px;'> </div>";
+        $mensagem .= "</body> </html>";
+    
+        $mail->Body = $mensagem;
+        $mail->send();
+    } catch (Exception $e) {
+        $_SESSION['erro_email'] = "Compra finalizada, mas houve um erro no envio do e-mail. Por favor, entre em contato com o suporte.";
+        error_log("Erro no envio de e-mail: " . $e->getMessage()); 
     }
 
     $_SESSION['ultima_compra'] = $vendaId;

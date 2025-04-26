@@ -8,7 +8,6 @@ if (isset($_POST['user_id']) && isset($_POST['ultima_compra'])) {
 }
 
 $vendaId = $_SESSION['ultima_compra'];
-unset($_SESSION['ultima_compra']); 
 
 $sql = "SELECT products_id_products, products.nome_products, products.valor_products, users.email_users, imagens.caminho_img, loja.nome_loja, vendas.*, vendas_has_products.quantity, vendas_has_products.preco_unitario
 FROM vendas_has_products
@@ -24,6 +23,12 @@ $stmt->execute();
 $dadosUltimaCompra = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $infoUnica = $dadosUltimaCompra[0];
+
+$sql = "SELECT email_users FROM users WHERE id_users =:idUser";
+$stmt = $connection->prepare($sql);
+$stmt->bindParam(':idUser', $_SESSION['user_id']);
+$stmt->execute();
+$email = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -56,7 +61,7 @@ $infoUnica = $dadosUltimaCompra[0];
             </div>
             <div class="info-first">
                 <p> <span class="intro"> Email enviado para: </p>
-                <span class="info-first-span"><?= $infoUnica['email_users'] ?> </span>
+                <span class="info-first-span"><?= $email['email_users'] ?> </span>
             </div>
             <div class="info-first">
                 <p> <span class="intro">Data e horário da compra:</span></p>

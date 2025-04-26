@@ -332,6 +332,7 @@ body {
   box-sizing: border-box;
   border: 1px solid #3C3B3B;
   text-align: center;
+  color: #8D6100;
 }
 
 .position {
@@ -408,6 +409,7 @@ body {
   width: 60%;
   text-align: center;
   border-color: #3C3B3B;
+  color: #8D6100;
 }
 
 .btn {
@@ -814,11 +816,24 @@ overflow-y: auto;
   border: none;
 }
 
+.ceta-back {
+  background-color: white;
+  padding: 13px 40px;
+  border-radius: 3px;
+  cursor: pointer;
+  border: none;
+  margin-top: 20px;
+}
+
 .ceta:hover{
  background-color: #3C3B3B;
 }
 
-.ceta:hover i {
+.ceta-back:hover {
+  background-color: #3C3B3B;
+}
+
+.ceta-back:hover i {
   color: white;
 }
 
