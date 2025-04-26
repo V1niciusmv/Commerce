@@ -133,14 +133,14 @@ try {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'viniciusifpe352@gmail.com'; // Seu e-mail
-        $mail->Password = 'sahb nrha fsud lvku'; // senha 
+        $mail->Username = 'freecommerce100@gmail.com'; // Seu e-mail
+        $mail->Password = 'wfxw uztz qbaj clcg'; // senha 
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
         $mail->CharSet = 'UTF-8';
 
         // Remetente e destinatário
-        $mail->setFrom('viniciusifpe352@gmail.com', 'Commerce');
+        $mail->setFrom('freecommerce100@gmail.com', 'Commerce');
         $mail->addAddress($idEmail['email_users'], $nomeUser['nome_users']);
 
         // Assunto e corpo do e-mail
