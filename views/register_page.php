@@ -1,5 +1,23 @@
 <?php 
 session_start();
+
+$rotass = [
+    'register_page.php' => [
+        'login' => 'welcome_page.php',
+        'register' => 'welcome_page.php',
+        'default' => 'welcome_page.php' 
+    ],
+    'default' => 'welcome_page.php' 
+];
+
+$paginaAtuall = basename($_SERVER['PHP_SELF']);
+$action = isset($_GET['action']) ? $_GET['action'] : 'default';
+
+if ($paginaAtuall === 'register_page.php') {
+    $destinoo = $rotass['register_page.php'][$action] ?? $rotass['register_page.php']['default'];
+} else {
+    $destinoo = $rotass['default'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -13,8 +31,8 @@ session_start();
 <body>
     <?php include('header_page.php'); ?>
     <div class="container-full">
-    <div class="back-icon" onclick="window.history.back()">
-    <i class='bx bx-chevron-left'></i>
+    <div class="back-icon">
+    <i class='bx bx-chevron-left' onclick="window.location.href='<?= $destinoo ?>'"></i>
 </div>
         <div class="form-full">
             <div class="form-login">
@@ -35,12 +53,12 @@ session_start();
                             unset($_SESSION['erro_login']);
                         } ?>
                         <label> E-mail </label>
-                        <input type="text" name="email" required>
+                        <input type="text" name="email"  value="<?= $_SESSION['login_data']['email'] ?? '' ?>" required>
                         <i class="bx bx-envelope"></i>
                     </div>
                     <div class="lg">
                         <label> Senha </label>
-                        <input type="password" name="senha" required>
+                        <input type="password" name="senha" value="<?= $_SESSION['login_data']['senha'] ?? '' ?>" required>
                         <i class="bx bx-lock"></i>
                     </div>
                     <div class="lg-button">
@@ -60,7 +78,7 @@ session_start();
                     <h1> Faça cadastro </h1>
                     <div class="rg">
                         <label> Nome </label>
-                        <input type="text" name="nome" required>
+                        <input type="text" name="nome" value="<?= $_SESSION['register_data']['nome'] ?? '' ?>" required>
                         <i class="bx bx-user"></i>
                     </div>
                     <div class="rg">
@@ -70,17 +88,22 @@ session_start();
                             unset($_SESSION['email_usado']);
                         } ?>
                         <label> E-mail </label>
-                        <input type="text" name="email" required>
+                        <input type="text" name="email" value="<?= $_SESSION['register_data']['email'] ?? '' ?>" required>
                         <i class="bx bx-envelope"></i>
                     </div>
                     <div class="rg">
                         <?php
-                        if (isset($_SESSION['cpf_usado'])) {
-                            echo '<p class="usado">' . $_SESSION['cpf_usado'] . '</p>';
-                            unset($_SESSION['cpf_usado']);
+                        if (isset($_SESSION['cpf_menor'])) {
+                            echo '<p class="usado">' . $_SESSION['cpf_menor'] . '</p>';
+                            unset($_SESSION['cpf_menor']);
+                        } ?>
+                          <?php
+                        if (isset($_SESSION['cpf_menor'])) {
+                            echo '<p class="usado">' . $_SESSION['cpf_menor'] . '</p>';
+                            unset($_SESSION['cpf_menor']);
                         } ?>
                         <label> CPF </label>
-                        <input type="text" name="cpf" id="cpf-id" required maxlength="14">
+                        <input type="text" name="cpf" id="cpf-id" value="<?= $_SESSION['register_data']['cpf'] ?? '' ?>" required maxlength="14">
                         <i class="bx bx-id-card"></i>
                     </div>
                     <div class="rg">
@@ -89,18 +112,24 @@ session_start();
                             echo '<p class="usado">' . $_SESSION['telefone_usado'] . '</p>';
                             unset($_SESSION['telefone_usado']);
                         } ?>
+                          <?php
+                        if (isset($_SESSION['telefone-menor'])) {
+                            echo '<p class="usado">' . $_SESSION['telefone-menor'] . '</p>';
+                            unset($_SESSION['telefone-menor']);
+                        } ?>
+                        
                         <label> Telefone </label>
-                        <input type="text" name="telefone" id="telefone-id" required maxlength="15">
+                        <input type="text" name="telefone" id="telefone-id" value="<?= $_SESSION['register_data']['telefone'] ?? '' ?>" required maxlength="15">
                         <i class="bx bx-phone"></i>
                     </div>
                     <div class="rg">
                         <label> endereco </label>
-                        <input type="text" name="endereco" required>
+                        <input type="text" name="endereco" value="<?= $_SESSION['register_data']['endereco'] ?? '' ?>" required>
                         <i class="bx bx-map"></i>
                     </div>
                     <div class="rg">
                         <label> Senha </label>
-                        <input type="password" name="senha" required maxlength="14">
+                        <input type="password" name="senha" value="<?= $_SESSION['register_data']['senha'] ?? '' ?>" required maxlength="14">
                         <i class="bx bx-lock"></i>
                     </div>
                     <div class="esqueci-senha">

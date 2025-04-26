@@ -3,6 +3,8 @@ session_start();
 require 'bd/connection.php';
 
 if(isset($_POST['cadastrar_usuario'])) {
+    $_SESSION['register_data'] = $_POST;
+
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $telefone = $_POST['telefone'];
@@ -22,6 +24,12 @@ if(isset($_POST['cadastrar_usuario'])) {
             exit();
         }
 
+        if (strlen($cpf) < 15 ) {
+            $_SESSION['cpf_menor'] = 'Esta faltando numeros no CPF';
+            header ('location: views/register_page.php?action=register ');
+            exit();
+        }
+
         $sqlCpf = "SELECT * FROM users WHERE cpf_users = :cpf";
         $stmtCpf = $connection->prepare($sqlCpf);
         $stmtCpf->bindParam(':cpf', $cpf);
@@ -32,6 +40,13 @@ if(isset($_POST['cadastrar_usuario'])) {
             header('location: views/register_page.php?action=register');
             exit();
         }
+
+        if (strlen($telefone) < 15) { 
+            $_SESSION['telefone_menor'] = 'Telefone incompleto (formato: (00) 00000-0000)';
+            header('location: views/register_page.php?action=register');
+            exit();
+        }
+
 
         $sqlTelefone = "SELECT * FROM users WHERE telefone_users = :telefone";
         $stmtTelefone = $connection->prepare($sqlTelefone);
@@ -55,6 +70,8 @@ if(isset($_POST['cadastrar_usuario'])) {
         $stmt->bindParam(':senha', $senha);
         $stmt->bindParam(':cpf', $cpf);
         $stmt->execute();
+
+        unset($_SESSION['form_data']);
 
         $_SESSION['mensagem_sucesso_cadastro'] = "Cadastro feito, agora faça seu login";
         header('location: views/register_page.php');

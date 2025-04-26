@@ -129,7 +129,7 @@ if ($stmt->rowCount() > 0) {
                 <div class="resultados-div">
                     <label> Valor</label>
                     <i id="less" class='bx bx-minus'></i>
-                    <input type="number" id="input" name="valor" value="<?= $produto['valor_products'] ?>" required>
+                    <input type="number" id="input" name="valor" value="<?= $produto['valor_products'] ?>"  required>
                     <i id="more" class='bx bx-plus'></i>
                 </div>
                 <div class="resultados-div">

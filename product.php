@@ -2,29 +2,54 @@
 session_start();
 require 'bd/connection.php';
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $_SESSION['form_data'] = $_POST;
+    if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
+        $_SESSION['form_files']['imagem_nome'] = $_FILES['imagem']['name'];
+    }
+}
+
 if (isset($_POST['adicionar_produto'])) {
-    $nomeProduto = $_POST['nome'];
-    $categoriaProduto = $_POST['categoria'];
-    $valorProduto = $_POST['valor'];
-    $estoqueProduto = $_POST['estoque'];
-    $descricaoProduto = $_POST['descricao'];
+    $nomeProduto = $_SESSION['form_data']['nome'];
+    $categoriaProduto = $_SESSION['form_data']['categoria'];
+    $valorProduto = $_SESSION['form_data']['valor'];
+    $estoqueProduto = $_SESSION['form_data']['estoque'];
+    $descricaoProduto = $_SESSION['form_data']['descricao'];
     $userId = $_SESSION['user_id'];
 
-    if ((empty($nomeProduto))  || (empty($categoriaProduto)) || (empty($valorProduto)) || (empty($estoqueProduto)) || (empty($descricaoProduto)) || (!isset($_FILES['imagem']) 
-    || $_FILES['imagem']['error'] !== UPLOAD_ERR_OK)) {
-        $_SESSION['restrincao_criarProduto'] = "Preencha todos os campos";
-        header("location: views/product_page.php?nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
-        exit();
-}
-    if ($estoqueProduto > 1000) {
-        $_SESSION['ValorEstoqueGrande'] = 'È permitido apenas 1.000 no estoque';
-        header('Location: ' . $_SERVER['PHP_SELF']);
-        exit();
+    $erros = [];
+    
+    if (empty($nomeProduto)) {
+        $erros[] = "Nome do produto é obrigatório";
+    }
+    
+    if (empty($categoriaProduto)) {
+        $erros[] = "Categoria é obrigatória";
+    }
+    
+    if (empty($valorProduto) || !is_numeric($valorProduto) || $valorProduto <= 0) {
+        $erros[] = "Valor inválido";
+    } elseif ($valorProduto > 10000) {
+        $erros[] = 'É permitido apenas 10.000 no valor';
+    }
+    
+    if (empty($estoqueProduto) || !is_numeric($estoqueProduto) || $estoqueProduto <= 0) {
+        $erros[] = "Estoque inválido";
+    } elseif ($estoqueProduto > 1000) {
+        $erros[] = 'É permitido apenas 1.000 no estoque';
+    }
+    
+    if (empty($descricaoProduto)) {
+        $erros[] = "Descrição é obrigatória";
+    }
+ 
+    if (empty($_SESSION['form_files']['imagem_nome'])) {
+        $erros[] = "Imagem é obrigatória";
     }
 
-    if ($valorProduto > 10000) {
-        $_SESSION['ValorGrande'] = 'È permitido apenas 10.000 no valor';
-        header('Location: ' . $_SERVER['PHP_SELF']);
+    if (!empty($erros)) {
+        $_SESSION['erros'] = $erros;
+        header("Location: views/product_page.php?show_form=1");
         exit();
     }
 
@@ -37,7 +62,7 @@ try {
 
     $verificarNome = $stmt->fetchColumn();
     if($verificarNome > 0) {
-        $_SESSION['nomeUtilizado'] = 'Você ja tem um produto com esse nome cadastrado';
+        $_SESSION['erros'] = 'Você ja tem um produto com esse nome cadastrado';
         header ('location: views/product_page.php');
         exit();
     }
@@ -77,7 +102,7 @@ try {
     $caminhoUpload = __DIR__ . '/img/img_produto/' . $nomeArquivo;
 
     if (!move_uploaded_file($imagem['tmp_name'], $caminhoUpload)) {
-        $_SESSION['restricao_criarImgProduto'] = "Erro ao salvar imagem";
+        $_SESSION['erros'] = "Erro ao salvar imagem";
         header("location: views/product_page.php?nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
         exit();
     }
@@ -93,6 +118,10 @@ try {
     $stmtImg->bindParam(':produtos_id_products', $idProduto);
     $stmtImg->execute();
     
+    unset($_SESSION['form_data']);
+    unset($_SESSION['form_files']);
+    unset($_SESSION['erros']);
+
     $_SESSION['cadastroProduto_sucesso'] = "Produto criado com sucesso";
     header('location: views/product_page.php');
     exit();

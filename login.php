@@ -3,6 +3,9 @@ session_start();
 require 'bd/connection.php';
 
 if(isset($_POST['login_usuario'])){
+
+    $_SESSION['login_data'] = $_POST;
+
     $email = trim($_POST['email']);
     $senha = trim($_POST['senha']);
 
@@ -24,6 +27,7 @@ if(isset($_POST['login_usuario'])){
         if ($user) {
             $_SESSION['user_id'] = $user['id_users'];
             $_SESSION['user_nome'] = $user['nome_users'];
+            unset($_SESSION['login_data']);
             header('location: views/home_page.php');
             exit();
         }else{

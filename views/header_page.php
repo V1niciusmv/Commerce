@@ -53,6 +53,15 @@ $totalProdutos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
       ?>
     </div>
 
+    <?php if (basename($_SERVER['PHP_SELF']) === 'welcome_page.php'){
+     if (isset($_SESSION['register_data'])) {
+      unset($_SESSION['register_data']);
+    } if (isset($_SESSION['login_data'])) {
+       unset($_SESSION['login_data']);
+     }
+  }
+  ?>
+
     <?php if ($paginaAtual === 'buy_page.php') 
         echo "<h1> Carrinho de compras </h1>";
       ?>
