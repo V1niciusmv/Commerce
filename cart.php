@@ -34,11 +34,12 @@ if ($quantidade) {
     $_SESSION['produto_no_carrinho'] = 'O produto ja existe no seu carrinho de compras';
     exit();
 } else {
-    $sqlInsert = "INSERT INTO cart_items (cart_id, product_id, quantity) VALUES 
-    (:cart_id, :product_id, 1)";
+    $sqlInsert = "INSERT INTO cart_items (cart_id, product_id, quantity, user_id) VALUES 
+    (:cart_id, :product_id, 1, :user_id)";
     $stmtInsert = $connection->prepare($sqlInsert);
     $stmtInsert->bindParam(':cart_id', $cartId);
     $stmtInsert->bindParam(':product_id', $id_produto);
+    $stmtInsert->bindParam(':user_id', $_SESSION['user_id']);
     $stmtInsert->execute();
 
     $sqlAddIdCartProduct = "SELECT * FROM products WHERE id_products = :idProduto";

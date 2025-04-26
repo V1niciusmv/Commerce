@@ -24,9 +24,10 @@ if ($verificarCart) {
     $cartId = $connection->lastInsertId();
 }
 
-$sql = "SELECT COUNT(*) FROM cart_items WHERE product_id = :idProduto";
+$sql = "SELECT COUNT(*) FROM cart_items WHERE product_id = :idProduto AND user_id = :idUser";
 $stmt = $connection->prepare($sql);
 $stmt->bindParam(':idProduto', $id_produto);
+$stmt->bindParam(':idUser', $_SESSION['user_id']);
 $stmt->execute();
 
 $verificarProduto = $stmt->fetchColumn();
@@ -35,12 +36,13 @@ if ( $verificarProduto > 0) {
     header ('location: views/home_page.php');
     exit();
 }else {
-    $sqlInsert = "INSERT INTO cart_items (cart_id, product_id, quantity) 
-    VALUES (:cart_id, :product_id, :quantity)";
+    $sqlInsert = "INSERT INTO cart_items (cart_id, product_id, quantity, user_id) 
+    VALUES (:cart_id, :product_id, :quantity, :user_id)";
      $stmtInsert = $connection->prepare($sqlInsert);
      $stmtInsert->bindParam(':cart_id', $cartId);
      $stmtInsert->bindParam(':product_id', $id_produto);
      $stmtInsert->bindParam(':quantity', $quantity);
+     $stmtInsert->bindParam(':user_id', $_SESSION['user_id']);
      $stmtInsert->execute();
      header ('location: views/home_page.php');
      exit();

@@ -1,9 +1,5 @@
 <?php
 session_start();
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 require 'bd/connection.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -11,11 +7,13 @@ use PHPMailer\PHPMailer\Exception;
 require 'vendor/autoload.php'; 
 
 if (isset($_POST['div2'])) {
-    $idProduct = $_POST['id_product'];
-    $idQuantidade = $_POST['quantidade_product'];
-    $metodo = $_POST['input-pix'];
+    $idProduct = $_POST['id_product']; // Array com id dos produtos
+    $idQuantidade = $_POST['quantidade_product']; // Quantidade do produto no carrinho, atualizada pela JS
+    $metodo = $_POST['input-pix']; // Inputs Radio
     $parcelas = null;
 
+    // Se caso o $metodo for igual ao credito, ele verifica se existe se existe algo selecionado no SELECT de parcelamentos
+    // Caso exista algo ele pega esse dado e transforma em um inteiro
     if ($metodo == 'credito') {
         if (!isset($_POST['select-parcelamento']) || empty($_POST['select-parcelamento'])) {
             $_SESSION['erro_parcelas'] = "Selecione o número de parcelas";
@@ -25,7 +23,8 @@ if (isset($_POST['div2'])) {
         $parcelas = (int)$_POST['select-parcelamento'];
     }
 }
-
+// Verifica se existe um array de $idProduct, e cria um array(array_fill que cria), cheio de interogação de acordo com a quantidade de produto que existe
+// implode junta essas interogações separadas por virgulas e transforma em uma String
 if (!empty($idProduct)) {
     $placeholders = implode(',', array_fill(0, count($idProduct), '?'));
 }
@@ -56,11 +55,15 @@ FROM cart_items
 INNER JOIN products ON cart_items.product_id = products.id_products
 INNER JOIN imagens ON imagens.produtos_id_products = products.id_products
 INNER JOIN loja ON products.loja_id_loja = loja.id_loja
-WHERE cart_items.product_id IN ($placeholders)";
-$stmtProdutos = $connection->prepare($sqlProdutos);
+WHERE cart_items.product_id IN ($placeholders) AND cart_items.user_id = ?"; // Passamos o placeHolders que armazenas os ( ?, ?, ?) de acordo 
+$stmtProdutos = $connection->prepare($sqlProdutos);                         // com a quantidade de produtos e tambem usamos o '?' para o Id do user
+// Como temos um array do id dos produtos enviados pelo $POST, temos que pegar um por um com o foreach no array($idProduto)
+// e como é um array indexado, pegamos o index de cada id que tem nele, e o valor de cada id 
+// O bindValue so aceita valores de 1 pra cima, 0 ele nao aceita, entao somamos 0 + 1, para o index se torna 1 e começar do 1 em vez do 0
 foreach ($idProduct as $index => $productId) {
     $stmtProdutos->bindValue($index + 1, $productId);
 }
+$stmtProdutos->bindValue(count($idProduct) + 1, $_SESSION['user_id']); //  verifica quantos id tem dentro do array e soma +1 para adicionar o Id do user
 
 $stmtProdutos->execute();
 $dadosProdutos = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
