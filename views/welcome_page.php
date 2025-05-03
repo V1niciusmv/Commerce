@@ -1,10 +1,16 @@
 <?php
+session_start();
+
 $nome_loja = 'Dragon Commerce';
 $email = 'DragonCommerce@gmail.com';
 $telefone = '(81) 7901-4191';
 $whatsapp = '(81) 7901-4191';
 $instagram = 'https://www.instagram.com/dragoncommerce';
 $endereco_loja = 'Campus Aurora';
+
+if (isset($_SESSION['user_id']))  { // Quando o user mudar a URL para welcome e nao dar erro de nao ter uma quebra de session, a pagina ira quebrar
+    unset($_SESSION['user_id']);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -81,15 +87,15 @@ $endereco_loja = 'Campus Aurora';
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     const radio1 = document.getElementById('radio1');
-    if (radio1) {
-        let counter = 1;
-        setInterval(() => {
-            const radio = document.getElementById('radio' + counter);
-            if (radio) {
+    if (radio1) { // Verifica se o radio1 existe, a primeira imagem
+        let counter = 1; // se existir o counter começa com 1
+        setInterval(() => { // Um intervalo de tempo 
+            const radio = document.getElementById('radio' + counter);// Ele pega o id do radio, concatenamdp o radio+counter
+            if (radio) { // e se existir esse radio ele marcar como cheked
                 radio.checked = true;
-                counter = counter < 4 ? counter + 1 : 1;
+                counter = counter < 4 ? counter + 1 : 1; // e verifica se o counter é menor que 4, se for menos ele vai aumentando ate chegar em 4 e resetar
             }
-        }, 2000);
+        }, 2000); // O tempo de 2 segundos para o intervalo ficar rodando o codigo e mudando a imagem 
     }
 });
 </script>

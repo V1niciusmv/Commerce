@@ -337,6 +337,10 @@ width: 100%;
 }
 
 .erroParcela {
+    display : none;
+}
+
+.erroParcela {
     z-index: 10000;
     color: red;
     font-weight: bolder;

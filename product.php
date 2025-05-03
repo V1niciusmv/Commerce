@@ -2,14 +2,15 @@
 session_start();
 require 'bd/connection.php';
 
+header('Content-Type: application/json');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['form_data'] = $_POST;
     if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
         $_SESSION['form_files']['imagem_nome'] = $_FILES['imagem']['name'];
     }
-}
 
-if (isset($_POST['adicionar_produto'])) {
+    $erros = [];
     $nomeProduto = $_SESSION['form_data']['nome'];
     $categoriaProduto = $_SESSION['form_data']['categoria'];
     $valorProduto = $_SESSION['form_data']['valor'];
@@ -17,7 +18,6 @@ if (isset($_POST['adicionar_produto'])) {
     $descricaoProduto = $_SESSION['form_data']['descricao'];
     $userId = $_SESSION['user_id'];
 
-    $erros = [];
     
     if (empty($nomeProduto)) {
         $erros[] = "Nome do produto é obrigatório";
@@ -28,7 +28,7 @@ if (isset($_POST['adicionar_produto'])) {
     }
     
     if (empty($valorProduto) || !is_numeric($valorProduto) || $valorProduto <= 0) {
-        $erros[] = "Valor inválido";
+        $erros[] = "Valor obrigatorio";
     } elseif ($valorProduto > 10000) {
         $erros[] = 'É permitido apenas 10.000 no valor';
     }
@@ -48,8 +48,7 @@ if (isset($_POST['adicionar_produto'])) {
     }
 
     if (!empty($erros)) {
-        $_SESSION['erros'] = $erros;
-        header("Location: views/product_page.php?show_form=1");
+        echo json_encode(['success' => false, 'erros' => $erros]);
         exit();
     }
 
@@ -62,8 +61,7 @@ try {
 
     $verificarNome = $stmt->fetchColumn();
     if($verificarNome > 0) {
-        $_SESSION['erros'] = 'Você ja tem um produto com esse nome cadastrado';
-        header ('location: views/product_page.php');
+        echo json_encode(['success' => false, 'erros' => ['Você já tem um produto com esse nome']]);
         exit();
     }
 
@@ -73,6 +71,7 @@ try {
     $stmtLoja->execute();
     $loja = $stmtLoja->fetch(PDO::FETCH_ASSOC);
     $id_loja = $loja['id_loja'];
+
 
     $sqlCategory = "INSERT INTO category (nome_category) VALUES (:nome_categoria)";
     $stmtCategory = $connection->prepare($sqlCategory);
@@ -102,9 +101,9 @@ try {
     $caminhoUpload = __DIR__ . '/img/img_produto/' . $nomeArquivo;
 
     if (!move_uploaded_file($imagem['tmp_name'], $caminhoUpload)) {
-        $_SESSION['erros'] = "Erro ao salvar imagem";
-        header("location: views/product_page.php?nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
+        echo json_encode(['success' => false, 'erros' =>['Erro ao salvar imagem']]);
         exit();
+    
     }
 
     $urlImagem = 'img/img_produto/' . $nomeArquivo;
@@ -122,8 +121,8 @@ try {
     unset($_SESSION['form_files']);
     unset($_SESSION['erros']);
 
-    $_SESSION['cadastroProduto_sucesso'] = "Produto criado com sucesso";
-    header('location: views/product_page.php');
+    $_SESSION['produtoCadastrado'] = "Produto cadastrado com sucesso";
+    echo json_encode(['success' => true]);
     exit();
 } catch (PDOException $e) {
     echo "Erro ao realizar cadastro do produto: " . $e->getMessage();

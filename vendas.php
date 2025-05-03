@@ -8,7 +8,7 @@ require 'vendor/autoload.php';
 
 if (isset($_POST['div2'])) {
     $idProduct = $_POST['id_product']; // Array com id dos produtos
-    $idQuantidade = $_POST['quantidade_product']; // Quantidade do produto no carrinho, atualizada pela JS
+    $idQuantidade = $_POST['quantidade_product']; // Array de quantidade, com id dos produtos e valores
     $metodo = $_POST['input-pix']; // Inputs Radio
     $parcelas = null;
 
@@ -36,6 +36,7 @@ $stmtEmail->bindParam(':user_id', $_SESSION['user_id']);
 $stmtEmail->execute();
 $idEmail = $stmtEmail->fetch(PDO::FETCH_ASSOC);
 
+// pegando o nome do user
 $sqlNomeUser = "SELECT nome_users FROM users WHERE id_users = :user_id";
 $stmtNomeUser = $connection->prepare($sqlNomeUser);
 $stmtNomeUser->bindParam(':user_id', $_SESSION['user_id']);
@@ -69,12 +70,17 @@ $stmtProdutos->execute();
 $dadosProdutos = $stmtProdutos->fetchAll(PDO::FETCH_ASSOC);
 
 /* utilizando um foreach para percorrer cada produto e quantidade que tem dentro carrinho*/
+// Ele pega o idQuantidade que contem os id de produto com os valores da quantidade e associa o dados[idDoProduto] como chave para acessar o valor
 foreach ($dadosProdutos as $dados) {
     $quantidade = $idQuantidade[$dados['id_products']];
     $estoqueAtual = $dados['estoque_products'];
 
     /* verificando se o estoque é menor que quantidade */
-
+    if($quantidade > $estoqueAtual) {
+        $_SESSION['quantidadeMaiorEstoque'] = "Qunatidade maior que o estoque";
+        header ('location: views/buy_page.php');
+        exit();
+    }
 }
 
 /* Iniciando uma transação para caso der erro, ela não continue com o SQL */
@@ -92,8 +98,10 @@ try {
     $stmtVenda->bindParam(':parcelas', $parcelas);
     $stmtVenda->execute();
 
+    // Pegando o ultimo ID inserindo agora na tabela
     $vendaId = $connection->lastInsertId();
 
+    // Multiplica os valores pela quantidade dos produtos que estão no carrinho
     $totalCompra = 0;
     foreach ($dadosProdutos as $dados) {
     $quantidade = $idQuantidade[$dados['id_products']];
@@ -108,15 +116,19 @@ try {
         $stmtItemVenda->bindParam(':preco', $totalCompra);
         $stmtItemVenda->execute();
 
+    // Atualiza o estoque de produto depois que acontece uma compra com o produto expecifico
+    // Se novo estoque for maior que zero ele sera 1 caso nao sera 0 
     $sqlNovoEstoque = "UPDATE products SET estoque_products = :novoEstoque, ativo = CASE WHEN :novoEstoque > 0 THEN 1 ELSE 0 
     END WHERE id_products = :idProduto";
     $stmtNovoEstoque = $connection->prepare($sqlNovoEstoque);
-        $novoEstoque = $dados['estoque_products'] - $idQuantidade[$dados['id_products']];
+    // diminuindo estoque pela quantidade para atualizar o valor em :novoEstoque
+        $novoEstoque = $dados['estoque_products'] - $quantidade;
         $stmtNovoEstoque->bindParam(':novoEstoque', $novoEstoque);
         $stmtNovoEstoque->bindParam(':idProduto', $dados['id_products']);
         $stmtNovoEstoque->execute();
     }
 
+    // Deletando o produto que acabou de ser comprado do carrinho de compras 
     $sqlDeleteCart = "DELETE FROM cart_items WHERE cart_id = :idCart AND product_id = :product_id";
     $stmtDeleteCart = $connection->prepare($sqlDeleteCart);
     foreach ($dadosProdutos as $dados) {
@@ -124,8 +136,11 @@ try {
         $stmtDeleteCart->bindParam(':product_id', $dados['id_products']);
         $stmtDeleteCart->execute();
     }
+
+    // Se chegou ate o commit sem dar erros, ele libera pro codigo rodar
     $connection->commit();
 
+    //
     $mail = new PHPMailer(true);
 
     try {
@@ -148,35 +163,47 @@ try {
 
         $mail->isHTML(true);
 
-        $mensagem = "<html> <body>";
-        $mensagem .= "<header style='background-color: #E49502; padding: 50px;'> </header>";
-        $mensagem .= "<div style='padding: 20px; display: flex; justify-content: center; flex-direction: column; background-color: white; width='100'; height='100';'>";
-        $mensagem .= " <h3> Olá " . $nomeUser['nome_users'] . ", sua compra foi realizada com sucesso. </h3> <br>";
-        $mensagem .= " <h4> Detalhes da sua compra: </h4> <br>";
-    
+        // HEADER
+        $mensagem = "<html><body>";
+        $mensagem .= "<div style='background-color: #E49502; padding: 50px;'></div>"; // Header laranja
+        
+        $mensagem .= "<table role='presentation' border='0' cellpadding='0' cellspacing='0' width='100%'>";
+        $mensagem .= "<tr>";
+        $mensagem .= "<td align='center' style='padding: 20px; background-color: white;'>";
+        
+        $mensagem .= "<h3 style='margin: 0 0 15px 0; font-family: Arial, sans-serif;'>Olá " . $nomeUser['nome_users'] . ", sua compra foi realizada com sucesso.</h3>";
+        $mensagem .= "<h4 style='margin: 0 0 20px 0; font-family: Arial, sans-serif;'>Detalhes da sua compra:</h4>";
+
         foreach ($dadosProdutos as $dados) {
-
             $caminhoImagem = __DIR__ . '/' . $dados['caminho_img'];
+            
+            $mensagem .= "<table align='center' border='0' cellpadding='0' cellspacing='0' width='100%' style='max-width: 400px; margin-bottom: 30px;'>";
+            $mensagem .= "<tr><td align='center'>";
+            
             if (file_exists($caminhoImagem)) {
-                $mail->addEmbeddedImage($caminhoImagem, 'produto_' . $dados['id_products']);
-            } else {
-                error_log("Imagem não encontrada: " . $caminhoImagem);
-            }
+                $mail->addEmbeddedImage($caminhoImagem, 'produto_'.$dados['id_products']);
+                $mensagem .= "<img src='cid:produto_".$dados['id_products']."' style='width: 200px; height: auto; display: block; margin: 0 auto 15px; border: 1px solid #eee;'>";
+            } 
 
-            $mensagem .= "<div style=' display:flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width='100'; height='auto';'>";
-            $mensagem .= "<img src='cid:produto_" . $dados['id_products'] ."' width='100' height='auto'>";
-            $mensagem .= "<p>" . $dados['nome_products'] . "</p>";
-            $mensagem .= "<p> (Quantidade:" . $quantidade . ") - R$ " . 
-                         number_format($dados['valor_products'], 2, ',', '.') . " </p> </div> <br>";
-
-                    
+            $mensagem .= "<p style='margin: 5px 0; font-family: Arial, sans-serif; font-weight: bold;'>".$dados['nome_products']."</p>";
+            $mensagem .= "<p style='margin: 5px 0 0 0; font-family: Arial, sans-serif;'>(Quantidade: ".$quantidade.") - R$ ".number_format($dados['valor_products'], 2, ',', '.')."</p>";
+            
+            $mensagem .= "</td></tr>";
+            $mensagem .= "</table>";
         }
-    
-        $mensagem .= "<p> Total: R$" . number_format($totalCompra, 2, ',', '.') . "</p> <br>";
-        $mensagem .= "<h3> Obrigado por comprar em nossa loja! </h3>";
-        $mensagem .= "</div>";
-        $mensagem .= "<div style='background-color: #E49502; padding: 50px;'> </div>";
-        $mensagem .= "</body> </html>";
+        
+        $mensagem .= "<table align='center' border='0' cellpadding='0' cellspacing='0' width='100%' style='max-width: 400px;'>";
+        $mensagem .= "<tr><td align='center' style='padding-top: 20px; border-top: 1px solid #ddd;'>";
+        $mensagem .= "<p style='margin: 0 0 10px 0; font-family: Arial, sans-serif; font-weight: bold;'>Total: R$".number_format($totalCompra, 2, ',', '.')."</p>";
+        $mensagem .= "<h3 style='margin: 20px 0 0 0; font-family: Arial, sans-serif;'>Obrigado por comprar em nossa loja!</h3>";
+        $mensagem .= "</td></tr>";
+        $mensagem .= "</table>";
+        
+        $mensagem .= "</td></tr>";
+        $mensagem .= "</table>";
+        
+        $mensagem .= "<div style='background-color: #E49502; padding: 50px;'></div>"; // Footer laranja
+        $mensagem .= "</body></html>";
     
         $mail->Body = $mensagem;
         $mail->send();

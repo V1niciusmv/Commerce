@@ -2,6 +2,16 @@
 session_start();
 require '../bd/connection.php';
 
+if (isset($_SESSION['form_data'])) {
+    unset($_SESSION['form_data']);
+} if (isset($_SESSION['form_files'])) {
+    unset($_SESSION['form_files']);
+}if (isset($_SESSION['register_loja'])) {
+    unset($_SESSION['register_loja']);
+} if (isset($_SESSION['register_loja_files'])) {
+    unset($_SESSION['register_loja_files']);
+}
+
 $sql = "SELECT COUNT(*) FROM products WHERE users_id_users = :id_user";
 $stmt = $connection->prepare($sql);
 $stmt->bindParam(':id_user', $_SESSION['user_id']);
@@ -47,6 +57,7 @@ if ($existeProduto > 0) {
     <script>
         const verificarSeTem = <?= isset($produto) ? 'true' : 'false' ?>;
 
+        //Veirifica se existem produtos
         if (verificarSeTem) {
             const categorias = {
                 1: "Eletrônicos",
@@ -74,18 +85,20 @@ if ($existeProduto > 0) {
             inputsCategoria.forEach(input => {
                 const categoriaId = input.value;
 
-                if (categorias[categoriaId]) {
-                    input.value = categorias[categoriaId];
+                if (categorias[categoriaId]) { // Associa o valor dos input de categoria ao dicionario de objtos 
+                    input.value = categorias[categoriaId]; // Atualiza o input com o resultado do dicionario associado
                 }
             });
         }
 
+        // Abre o modal, (passando o id do produto)
         function openModal(idProduto) {
-            const pro = <?= json_encode($produtos) ?>;
-            const product = pro.find(products => products.id_products == idProduto);
+            const pro = <?= json_encode($produtos) ?>; // transforma o array em php em json string para o js entender
+            const product = pro.find(products => products.id_products == idProduto); // Verifica com o find se existe algum produto com id passado
 
-            document.getElementById('modalProduct').style.display = 'flex';
+            document.getElementById('modalProduct').style.display = 'flex'; // se tiver abre
 
+            // IDs acessados via JS da pag de exibição de produtos e sendo atualizados dinamicamente usando a variavel product
             document.getElementById('modal-id-product-comprar').value = product.id_products;
             document.getElementById('modal-id-product-adicionar').value = product.id_products;
             document.getElementById('modal-img').src = '../' + product.caminho_img;
@@ -121,10 +134,11 @@ if ($existeProduto > 0) {
             document.getElementById('modal-descricao').value = product.descricao_products;
         }
 
-        function fecharModal() {
+        function fecharModal() { // Fecha o modal
             document.getElementById('modalProduct').style.display = 'none';
         }
 
+        // Se o usuario estiver logado e tiver o um carrinho de compras ele pode adicionar, se não o event de submit é bloqueado
         const veriUserOn = <?= (isset($_SESSION['user_id'])) ? 'true' : 'false' ?>;
         const addCarrinhoBtn = document.getElementById('add-carrinho');
 
@@ -136,7 +150,7 @@ if ($existeProduto > 0) {
                 });
             }
         }
-
+        // Verifica se existe user logado, caso não exista e eu clique em comprar sou redirecionado para register page
         const veriUser = <?= (!isset($_SESSION['user_id'])) ? 'true' : 'false' ?>;
         function verificarUser(event) {
             if (veriUser) {

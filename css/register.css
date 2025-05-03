@@ -38,7 +38,9 @@ color: #8D6100;
     height: 600px;
     min-width: 450px;
    border-radius: 20%;
-    box-shadow: 0 0 30px black;
+    box-sizing: border-box;
+    padding: 20px;
+    background-color: transparent
  }
 
  form {
@@ -76,6 +78,7 @@ label {
     background-color: #E49502;
     border-bottom-right-radius: 20px;
     border-top-right-radius: 20px;
+    box-sizing: border-box;
 }
 
 .lg, .rg {
@@ -204,6 +207,9 @@ p{
 .mensagem-sessao-vazia, .mensagem-sessao, .usado{
     color: red;
     text-align: center;
+    position: absolute;
+    z-index: 10000;
+    font-weight: 200;
 }
 
 @media (max-width: 868px) {

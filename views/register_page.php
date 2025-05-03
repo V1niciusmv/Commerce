@@ -1,23 +1,25 @@
 <?php 
 session_start();
+if (isset($_SESSION['user_id']))  { // Quando o user mudar a URL para welcome e nao dar erro de nao ter uma quebra de session, a pagina ira quebrar
+    unset($_SESSION['user_id']);
+}
 
+//Array associativo onde tem o register_page que esta associado a tres outras opções
 $rotass = [
     'register_page.php' => [
         'login' => 'welcome_page.php',
         'register' => 'welcome_page.php',
         'default' => 'welcome_page.php' 
     ],
-    'default' => 'welcome_page.php' 
+    'default' => 'welcome_page.php' // se n existir nada na URL ele vai para welcome pagina padrão
 ];
 
-$paginaAtuall = basename($_SERVER['PHP_SELF']);
-$action = isset($_GET['action']) ? $_GET['action'] : 'default';
+$paginaAtuall = basename($_SERVER['PHP_SELF']); // Pega o nome da pagina atual, register_page.php
+$action = isset($_GET['action']) ? $_GET['action'] : 'default'; // Pega o parametro da URL atual se existir, se nao existir pega o default
 
-if ($paginaAtuall === 'register_page.php') {
-    $destinoo = $rotass['register_page.php'][$action] ?? $rotass['register_page.php']['default'];
-} else {
-    $destinoo = $rotass['default'];
-}
+if ($paginaAtuall === 'register_page.php') { // Verifica se a pagina atual é register
+    $destinoo = $rotass['register_page.php'][$action] ?? $rotass['register_page.php']['default']; // E verifica e assosia
+} 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,7 +33,7 @@ if ($paginaAtuall === 'register_page.php') {
 <body>
     <?php include('header_page.php'); ?>
     <div class="container-full">
-    <div class="back-icon">
+    <div class="back-icon"> <!-- Icon pega a variavel $destino que esta fazendo a verificação e associação do array associativo -->
     <i class='bx bx-chevron-left' onclick="window.location.href='<?= $destinoo ?>'"></i>
 </div>
         <div class="form-full">
@@ -68,7 +70,7 @@ if ($paginaAtuall === 'register_page.php') {
                 <div class="div-login" id="div-login-id">
                     <h1>Olá, seja bem vindo</h1>
                     <p> Você ja tem cadastro?</p>
-                    <div class="div-button">
+                    <div class="div-button"> <!-- button de alternar o Form entre Login e cadastro -->
                         <button onclick="toggleForm('login')"> Clique aqui </button>
                     </div>
                 </div>
@@ -142,7 +144,7 @@ if ($paginaAtuall === 'register_page.php') {
                 <div class="div-register" id="div-register-id">
                     <h1> Ainda não <br>
                         tem o cadastro??</h1>
-                    <div class="div-button">
+                    <div class="div-button"> <!-- button de alternar o Form entre Login e cadastro -->
                         <button onclick="toggleForm('register')"> Clique aqui </button>
                     </div>
                 </div>
@@ -150,12 +152,15 @@ if ($paginaAtuall === 'register_page.php') {
         </div>
     </div>
     <script>
+        // New URL transforma a URL em um objeto manipulavel 
+        // document.location.toString  Pega a URL completa da pagina
+        // searchParams pega os parametros da URL que vem depois do '?'
         const params = new URL(document.location.toString()).searchParams;
-        const action = params.get("action");
+        const action = params.get("action"); // Pegamos o parametro
 
-        toggleForm(action);
+        toggleForm(action); // E chamamos a function passando o action
 
-        function toggleForm(form) {
+        function toggleForm(form) { // Verificamos se a action é login ou register para a visibilidades das DIV 
             const formCadastro = document.getElementById('div-register-id');
             const Formlogin = document.getElementById('div-login-id');
             if (form === 'register') {
@@ -168,12 +173,19 @@ if ($paginaAtuall === 'register_page.php') {
         }
 
         function applyMaskCpf(cpf) {
+            // Remove tudo oque não é numero
+            // \D procura tudo que não tem numero
+            // g, aplica em todos os caracteres não so o primeiro
+            // \d procura digitos numericos
+            // Exemplo: Pegamos os 3 primeiros digitos e depois pegamos os proximos digitos
+            // acrescentamos um (.) a cada 3 digitos e no ultimo replace pegamos 1 ou 2 numeros
             cpf = cpf.replace(/\D/g, '');
-            cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
+            cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); 
             cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');
             cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
             return cpf;
         }
+        // Pegamos o id do input do CPF e adicinamos um Event input e pegamos os dados em tempo real doque esta sendo digitado e aplicamos a function
         document.getElementById('cpf-id').addEventListener('input', function (e) {
             e.target.value = applyMaskCpf(e.target.value); 
         });

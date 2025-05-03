@@ -64,7 +64,7 @@ $email = $stmt->fetch(PDO::FETCH_ASSOC);
                 <span class="info-first-span"><?= $email['email_users'] ?> </span>
             </div>
             <div class="info-first">
-                <p> <span class="intro">Data e horário da compra:</span></p>
+                <p> <span class="intro">Data e horário da compra:</span></p> <!-- Ajeita a data no formato certo -->
                    <span class="info-first-span"><?= date('d/m/Y H:i', strtotime($infoUnica['data_vendas'])) ?> </span> 
             </div>
             <div class="info-first">

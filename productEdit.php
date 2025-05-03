@@ -11,7 +11,7 @@ if (isset($_POST['editar_produto'])) {
     $descricaoProduto = $_POST['descricao'];
 
 
-    if (empty($nomeProduto)  || empty($categoriaProduto) || empty($valorProduto) || empty($estoqueProduto) || empty($descricaoProduto)) {
+    if (empty($nomeProduto)  || empty($categoriaProduto) || empty($valorProduto) || !isset($estoqueProduto) || empty($descricaoProduto)) {
         $_SESSION['restrincao_editarLoja'] = "Preencha todos os campos";
         header("location: views/productEdit_page.php?&nome=$nomeProduto&categoria=$categoriaProduto&valor=$valorProduto&estoque=$estoqueProduto&descricao=$descricaoProduto");
         exit();
@@ -99,6 +99,21 @@ if ($valorProduto > 10000) {
     $stmt->bindParam(':descricao', $descricaoProduto);
     $stmt->bindParam(':id_produto', $idProduto);
     $stmt->execute();
+
+    $sql = "SELECT estoque_products FROM products WHERE id_products = :idProduto";
+    $stmt = $connection->prepare($sql);
+    $stmt->bindParam(':idProduto', $idProduto);
+    $stmt->execute();
+    $estoque_atualizado = $stmt->fetchColumn();
+
+    if ($estoqueProduto <= 0) {
+        $sqlNovoEstoque = "UPDATE products SET ativo = CASE WHEN :novoEstoque > 0 THEN 1 ELSE 0 
+        END WHERE id_products = :idProduto";
+        $stmtNovoEstoque = $connection->prepare($sqlNovoEstoque);
+            $stmtNovoEstoque->bindParam(':novoEstoque', $estoque_atualizado);
+            $stmtNovoEstoque->bindParam(':idProduto', $idProduto);
+            $stmtNovoEstoque->execute();
+        }
 
     $sqlImgAtual = "SELECT caminho_img FROM imagens WHERE produtos_id_products = :id_produto";
     $stmtImgAtual = $connection->prepare($sqlImgAtual);

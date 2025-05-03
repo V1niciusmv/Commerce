@@ -7,21 +7,6 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-// Quando o user sai da pagina de cadastro que tem o paramentro da URL, a session perde os dados armazenados dentro dela
-if (!isset($_GET['show_form'])) {
-    unset($_SESSION['form_data']);
-    unset($_SESSION['form_files']);
-}
-
-// Start como false 
-$mostrarFormulario = false; 
-
-// Verifica se existe, GET,SESSION....caso exista transforma o $mostrarFormulario para TRUE
-if ( isset($_GET['show_form']) || isset($_SESSION['restricao_criarImgProduto']) || isset($_SESSION['nomeUtilizado']) || 
-    isset($_SESSION['restrincao_criarProduto']) || isset($_SESSION['ValorEstoqueGrande'])) {
-    $mostrarFormulario = true;
-}
-
 // Seleciona todos os produtos e imagens, categorias dos 'produtos'
 $sql = "SELECT products.*, imagens.caminho_img, category.id_category, category.nome_category
 FROM products
@@ -35,7 +20,6 @@ $stmt->execute();
 if ($stmt->rowCount() > 0) {
     $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
 // Pega o ID da loja, para verificar se existe uma loja cadastrada
 $sql = "SELECT id_loja FROM loja WHERE users_id_users = :user_id";
 $stmt = $connection->prepare($sql);
@@ -62,10 +46,9 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
             <?php if (isset($produtos)): ?>
                 <div class="itens">
                     <h4> Seus produtos </h4>
-                    <?php if (isset($_SESSION['cadastroProduto_sucesso'])) {
-                        echo '<p class="sessionGreen">' . $_SESSION['cadastroProduto_sucesso'] . '</p>';
-                        unset($_SESSION['cadastroProduto_sucesso']);
-                        unset($_SESSION['produto_deletado']);
+                    <?php if (isset($_SESSION['produtoCadastrado']) && isset($produtos) && count($produtos) >= 1) {
+                        echo '<p class="sessionGreen">' . $_SESSION['produtoCadastrado'] . '</p>';
+                        unset($_SESSION['produtoCadastrado']);
                     } ?>
                     <?php if (isset($_SESSION['produto_deletado']) && isset($produtos) && count($produtos) >= 1) {
                         echo '<p class="sessionRed">' . $_SESSION['produto_deletado'] . '</p>';
@@ -91,20 +74,15 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
         <div class="container-form-cadastro" id="form-cadastro">
             <h1> Cadastre seu produto </h1>
 
-            <!-- Uma Session-array que armazena todos os erros -->
-              <?php if (isset($_SESSION['erros'])): ?>
-                <?php foreach ($_SESSION['erros'] as $erros): ?>
-               <p class="sessionRed"> <?= $erros ?> </p>
-                <?php endforeach; ?>
-              <?php  unset($_SESSION['erros']); ?>
-             <?php endif; ?>
+            <!-- div que vai mostrar os erros capturados no array de erros do back, exibido pelo Fetch  -->
+            <div id="erros-container"></div>
 
              <!-- $formData vai armazenar a Session-array que contem os dados dos produtos que foram cadastrados -->
             <?php $formData = $_SESSION['form_data'] ?? []; ?>
 
             <!-- Em cada input do Form de cadastro tem um value exibindo o $formData passando o name dos input para a informação ser mostrada correta -->
              <!-- Caso não exista nenhum resultado na $_SESSION['form_data'], não exibe nada -->
-            <form id="form" action="../product.php" method="POST" enctype="multipart/form-data">
+            <form id="form" enctype="multipart/form-data">
                 <div class="divs-input">
                     <div class="div-resultados">
                         <label> Nome do produto</label>
@@ -150,13 +128,15 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
                         <label> Valor</label>
                         <div class="position">
                             <i id="less" class='bx bx-minus'></i>
-                            <input type="number" id="input" name="valor" value="<?= $formData['valor'] ?? '' ?>">
+                            <input type="number" id="input" name="valor" step="1" min="0"
+                            onkeypress="return event.charCode >= 48 && event.charCode <= 57" value="<?= htmlspecialchars($formData['valor'] ?? '') ?>">
                             <i id="more" class='bx bx-plus'></i>
                         </div>
                     </div>
                     <div class="div-resultados">
                         <label> Quantidade</label>
-                        <input type="number" name="estoque" value="<?= $formData['estoque'] ?? '' ?>" required>
+                        <input type="number" name="estoque" step="1" min="0"
+                        onkeypress="return event.charCode >= 48 && event.charCode <= 57" value="<?= $formData['estoque'] ?? '' ?>" required>
                     </div>
                 </div>
                 <div class="div-img">
@@ -172,16 +152,16 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
                 <div class="div-text">
                     <label for="descricao"> Descrição </label>
                     <textarea id="descricao" name="descricao" rows="5" cols="40" placeholder="Digite a descrição do produto">
-                    <?= htmlspecialchars($formData['descricao'] ?? '') ?>
-                        </textarea>
+                    <?= htmlspecialchars($formData['descricao'] ?? '') ?> </textarea>
                 </div>
                 <div class="btn">
-                    <button type="submit" for="form" name="adicionar_produto"> Adicionar</button>
+                    <button type="submit" id="btn-submit"> Adicionar</button>
                 </div>
             </form>
         </div>
     </div>
     <script>
+        //Pegamos o id do icon (+, -) e o input 
         const moreIcon = document.getElementById("more");
         const lessIcon = document.getElementById("less");
         const input = document.getElementById("input");
@@ -194,30 +174,69 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
             input.value = Math.max(0, parseInt(input.value || 0) - 1);
         });
 
+        // pega o ID do input type = file que armazena a imagem, e adiciona um event change
+        // verifica se neste arquivo file tem alguma foto, se for maior que zero tem
+        //this.file[0].name, pega o nome da 1 foto que começando do indece[0], como so temos 1foto. Se não exibe a mensagem nenhum arquivo....
         document.getElementById("idimg").addEventListener("change", function () {
             let fileName = this.files.length > 0 ? this.files[0].name : "Nenhum arquivo escolhido";
             document.getElementById("file-name").textContent = fileName;
         });
 
-        //  Pega o ID do icon e adiciona um evento de click, redirecionando para a pagina atual com um parametro 
-        // ele pega o caminho da pagina atual passando o '?show_form=true' de paramentro, e redireciona para essa nova URL
-        const verificarSeTem = <?php echo isset($produtos) ? 'true' : 'false'; ?>;
-        if (verificarSeTem) {
-            document.getElementById('icon').addEventListener("click", function () {
-               window.location.href = window.location.pathname + '?show_form=true';
-            });
-        }
-
-        // Quando é adicionado um paramentro a URL atual, a variavel $mostrarFormulario fica true, ocultando os produtos e exibindo o formCadastro
-        const mostrarFormulario = <?= $mostrarFormulario ? 'true' : 'false' ?>;
-        if (mostrarFormulario) {
+        // Pega o ID do icon e ao clicar ele exibe o form cadastro
+        document.getElementById('icon').addEventListener("click", function () {
             const produtos = document.getElementById('produto');
             const cadastro = document.getElementById('form-cadastro');
 
             produtos.style.display = 'none';
             cadastro.style.display = 'flex';
-        }
+    });
 
+    // Pega o id do formulario e adiciona um event submit para não enviar o email, passa o async para poder usar o await
+    document.getElementById('form').addEventListener('submit', async function(e) {
+    e.preventDefault(); // Canceala o envio do formulario
+    
+    const formData = new FormData(this); // Pega os dados que estão dentro do Form com o 'New FromData'
+    const btnSubmit = document.getElementById('btn-submit'); // pega o id do button 
+    
+    try {
+        btnSubmit.disabled = true; //Desabilita o button para não ter mais requisições
+        btnSubmit.textContent = 'Enviando...'; // Exibe essa mensagem
+        
+        const response = await fetch('../product.php', { // Faz um requisição assicrona com o back de productts
+            method: 'POST', // define o metodo das informações enviadas
+            body: formData, // e passa as informações
+            credentials: 'same-origin' // Mantém os cookies da sessão (sessão do user)
+        });
+        
+        // Verifica se a resposta é JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Resposta não é JSON');
+        }
+        
+        // Recebe as respostas em json_enconde porem são enviadas HTTP bruta e elas chegam como string, e converte para json, e armazena em data
+        const data = await response.json();
+        
+        // verifica se tem erros
+        if (!data.success) {
+            // pega o array de erros e transforma em HTML 
+            // ele pega data.erros e transforma com o map pegando cada item da lista do array e passando para erro que é um arrow function, transformando cada erro em um <p>
+            const errorsHtml = data.erros.map(erro => 
+                `<p class="sessionRed">${erro}</p>`
+            ).join('');// Concatena todos em uma unica String '<p>, <p>'
+            document.getElementById('erros-container').innerHTML = errorsHtml; // Pega o id da div de exibir o erro, e atualiza para o valor dos resultados
+        } else if (data.success) {
+            window.location.reload();
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        document.getElementById('erros-container').innerHTML = 
+            '<p class="sessionRed">Erro ao processar a resposta do servidor</p>';
+    } finally {
+        btnSubmit.disabled = false; // Habilita o button
+        btnSubmit.textContent = 'Adicionar';
+    }
+});
         // Caso não exista Loja, ira exibir uma mensagem para criar, caso exista exibe o form de cadastro e ocultando a tela de 'sem produtos, cadastresse' 
         // So pode cadastrar produto se existir uma loja
         const verificar = <?php echo !isset($produtos) ? 'false' : 'true'; ?>;
@@ -235,9 +254,10 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
                 }
             });
         }
-
+//Veirifica se existem produtos
+        const verificarSeTem = <?= isset($produto) ? 'true' : 'false' ?>;
         if (verificarSeTem) {
-            const categorias = {
+            const categorias = { // Um Dicionario de objeto JS com chaves e valores
                 1: "Eletrônicos",
                 2: "Comidas",
                 3: "Bebidas",
@@ -257,23 +277,25 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
                 17: "Higiene",
                 18: "Informática"
             };
-
+                // Pega as categorias de todos os produtos que estão em exibição
             const inputsCategoria = document.querySelectorAll('#cat-pro');
-            inputsCategoria.forEach(input => {
-                const categoriaId = input.value;
+            inputsCategoria.forEach(input => { // Usa forEach para percorrer todos eles
+                const categoriaId = input.value; // Pega o valor de cada um 
 
-                if (categorias[categoriaId]) {
-                    input.value = categorias[categoriaId];
+                if (categorias[categoriaId]) { // e associa ao objeto JS, se existir e for iguais 
+                    input.value = categorias[categoriaId]; // Ele atualiza o valor do campo para o valor respectivo ao do objeto
                 }
             });
         }
 
-        function openModal(idProduto) {
-            const pro = <?= json_encode($produtos) ?>;
-            const product = pro.find(products => products.id_products == idProduto);
+        // Function para abrir um modal exibindo o produto
+        function openModal(idProduto) { // Pega o id do produto passado
+            const pro = <?= json_encode($produtos) ?>; // Transforma o array em um json para o js entender
+            const product = pro.find(products => products.id_products == idProduto); // usamos o find para percorre o array e achar o 1 valor igual a condição
 
             document.getElementById('modalProduct').style.display = 'flex';
 
+            // Pega os id dos produtos pelo ID, e atualiza os valores pela variavel product do JS para tornar interativo 
             document.getElementById('modal-img').src = '../' + product.caminho_img;
             document.getElementById('modal-nome').value = product.nome_products;
             document.getElementById('modal-categoria').value = product.nome_category;
@@ -306,11 +328,11 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
             document.getElementById('modal-estoque').value = product.estoque_products;
             document.getElementById('modal-descricao').value = product.descricao_products;
         }
-        
+        // Quando eu clicar na seta de voltar, ele feicha o modal
         function fecharModal() {
     document.getElementById('modalProduct').style.display = 'none';
 }
     </script>
 </body>
-
+.
 </html>

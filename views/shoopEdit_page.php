@@ -66,8 +66,8 @@ if ($stmt->rowCount() > 0) {
                         <label> Nome da loja: </label>
                         <input type="text" name="nome" value="<?= $loja['nome_loja'] ?>" required>
                     </div>
-                    <span id="erros"></span>
                     <div class="result-input-edit">
+                        <span id="erros"></span>
                         <?php if (isset($_SESSION['telefoneUsado'])) {
                             echo '<p class="red">' . $_SESSION['telefoneUsado'] . '</p>';
                             unset($_SESSION['telefoneUsado']);
@@ -77,8 +77,8 @@ if ($stmt->rowCount() > 0) {
                             value="<?= $loja['telefone_loja'] ?>" required>
                     </div>
                     </div>
-                    <span id="errosCnpj"></span>
                     <div class="result-input-edit">
+                        <span id="errosCnpj"></span>
                         <?php if (isset($_SESSION['cnpjUsado'])) {
                             echo '<p class="red">' . $_SESSION['cnpjUsado'] . '</p>';
                             unset($_SESSION['cnpjUsado']);
@@ -112,6 +112,7 @@ if ($stmt->rowCount() > 0) {
                     errors.innerHTML = '';
                 } else {
                     errors.innerHTML = 'É necessario ter 14 números';
+                    document.getElementById('erros').style.color = 'red';
                 }
             } else {
                 errors.innerHTML = '';
@@ -139,6 +140,7 @@ if ($stmt->rowCount() > 0) {
                     erros.innerHTML = '';
                 } else {
                     erros.innerHTML = 'O CNPJ tem que ter 14 digitos';
+                    document.getElementById('errosCnpj').style.color = 'red'; 
                 }
             } else {
                 erros.innerHTML = '';

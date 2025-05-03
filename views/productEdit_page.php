@@ -7,10 +7,12 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+// Verifica se tem algum REQUEST de metodo POST e se Existe algum metodo POST enviado
+// Se tiver salva no ID
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['produto'])) {
     $_SESSION['id_produto'] = $_POST['produto']; 
 }
-
+// Seleciona o produto passado como edição
 $sql = "SELECT products.*, imagens.caminho_img, loja.id_loja, category.id_category, category.nome_category
 FROM products
 LEFT JOIN imagens ON products.id_products = produtos_id_products 
@@ -87,6 +89,7 @@ if ($stmt->rowCount() > 0) {
                 <div class="resultados-div-cat">
                     <label>Categoria</label>
                         <select name="categoria" id="categoriia" required>
+                            <!-- Veririca se o nome da categoria que esta no BD é a mesma que os valores exibidos no html -->
                             <option value="1" <?= ($produto['nome_category'] == '1') ? 'selected' : '' ?>> Eletrônicos</option>
                             <option value="2" <?= ($produto['nome_category'] == '2') ? 'selected' : '' ?>>Comidas
                             </option>

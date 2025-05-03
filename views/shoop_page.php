@@ -65,7 +65,7 @@ if ($stmt->rowCount() > 0) {
     </div>
 
     <form action="../shoopDelete.php" method="POST">
-        <input type="hidden" name="id_loja" value="<?= $loja['id_loja'] ?>">
+        <input type="hidden" name="id_loja" value="<?= $loja['id_loja'] ?>"> 
         <button type="submit" name="deletar_loja"> Deletar loja <i class='bx bx-trash'></i></button>
     </form>
 </div>
@@ -92,7 +92,7 @@ if ($stmt->rowCount() > 0) {
                             unset($_SESSION['nomeLojaUsado']);
                         } ?>
                         <label> Nome da loja: </label>
-                        <input type="text" name="nome" value="<?= $_GET['nome'] ?? '' ?>" required>
+                        <input type="text" name="nome" value="<?= $_SESSION['register_loja']['nome'] ?? '' ?>" required>
                     </div>
                     <span id="erros"></span>
                     <div class="result-register">
@@ -104,7 +104,7 @@ if ($stmt->rowCount() > 0) {
                         ?>
                         <label> Telefone: </label>
                         <input type="text" name="telefone" maxlength="15" id="telefone-id"
-                            value="<?= $_GET['telefone'] ?? '' ?>" required>
+                            value="<?= $_SESSION['register_loja']['telefone'] ?? '' ?>" required>
                     </div>
                 </div>
                 <div class="input-register">
@@ -117,16 +117,15 @@ if ($stmt->rowCount() > 0) {
                         ?>
                         <span id="errosCnpj"></span>
                         <label> CNPJ: </label>
-                        <input type="text" name="cnpj" id="cnpj-id" pattern="{18}" value="<?= $_GET['cnpj'] ?? '' ?>"
+                        <input type="text" name="cnpj" id="cnpj-id" pattern="{18}" value="<?= $_SESSION['register_loja']['cnpj'] ?? '' ?>"
                             maxlength="18" required>
                     </div>
                     <div class="result-register-img">
                         <input type="file" id="idimg" name="imagem" accept="image/*">
                         <label for="idimg">
                             <i class='bx bx-camera'></i>
-                            Adicione uma imagem
+                       <span id=file-name> <?= $_SESSION['register_loja_files']['imagem_nome'] ?? 'Adicione uma imagem' ?> </span>
                         </label>
-                        <span id="file-name" class="file-name">Nenhum arquivo escolhido</span>
                     </div>
                 </div>
                 <div class="btn-register">
@@ -202,10 +201,17 @@ if ($stmt->rowCount() > 0) {
         }
         window.onload = toggleButtonState;
 
-        document.getElementById("idimg").addEventListener("change", function () {
-        let fileName = this.files.length > 0 ? this.files[0].name : "Nenhum arquivo escolhido";
-        document.getElementById("file-name").textContent = fileName;
-    });
+        document.getElementById('idimg').addEventListener('change', function(e) {
+    const fileNameSpan = document.getElementById('file-name');
+    
+    if (this.files.length > 0) {
+        // Se um novo arquivo foi selecionado
+        fileNameSpan.textContent = this.files[0].name;
+    } else {
+        // Se nenhum arquivo selecionado, mostra o da sessão ou texto padrão
+        fileNameSpan.textContent = "<?= $_SESSION['register_loja_files']['imagem_nome'] ?? 'Adicione uma imagem' ?>";
+    }
+});
     </script>
 </body>
 
