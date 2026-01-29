@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+$produtos = []; 
 // Seleciona todos os produtos e imagens, categorias dos 'produtos'
 $sql = "SELECT products.*, imagens.caminho_img, category.id_category, category.nome_category
 FROM products
@@ -20,6 +21,9 @@ $stmt->execute();
 if ($stmt->rowCount() > 0) {
     $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+$temProdutos = !empty($produtos);
+
 // Pega o ID da loja, para verificar se existe uma loja cadastrada
 $sql = "SELECT id_loja FROM loja WHERE users_id_users = :user_id";
 $stmt = $connection->prepare($sql);
@@ -43,7 +47,7 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
     <div class="container-product-full">
         <div id="produto"> 
             <!-- Se existir produtos exibe eles -->
-            <?php if (isset($produtos)): ?>
+            <?php if ($temProdutos): ?>
                 <div class="itens">
                     <h4> Seus produtos </h4>
                     <?php if (isset($_SESSION['produtoCadastrado']) && isset($produtos) && count($produtos) >= 1) {
@@ -183,13 +187,17 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
         });
 
         // Pega o ID do icon e ao clicar ele exibe o form cadastro
-        document.getElementById('icon').addEventListener("click", function () {
-            const produtos = document.getElementById('produto');
-            const cadastro = document.getElementById('form-cadastro');
+  const icon = document.getElementById('icon');
 
-            produtos.style.display = 'none';
-            cadastro.style.display = 'flex';
+if (icon) {
+    icon.addEventListener("click", function () {
+        const produtos = document.getElementById('produto');
+        const cadastro = document.getElementById('form-cadastro');
+
+        produtos.style.display = 'none';
+        cadastro.style.display = 'flex';
     });
+}
 
     // Pega o id do formulario e adiciona um event submit para não enviar o email, passa o async para poder usar o await
     document.getElementById('form').addEventListener('submit', async function(e) {
@@ -239,23 +247,24 @@ $loja = $stmt->fetch(PDO::FETCH_ASSOC);
 });
         // Caso não exista Loja, ira exibir uma mensagem para criar, caso exista exibe o form de cadastro e ocultando a tela de 'sem produtos, cadastresse' 
         // So pode cadastrar produto se existir uma loja
-        const verificar = <?php echo !isset($produtos) ? 'false' : 'true'; ?>;
+        const verificar = <?php echo $temProdutos ? 'true' : 'false'; ?>;
         const verificarLoja = <?php echo isset($loja['id_loja']) ? 'true' : 'false'; ?>;
-        if (!verificar) {
-            document.getElementById('cadastrar').addEventListener("click", function () {
-                if (verificarLoja) {
-                    const semCadastro = document.getElementById('idCliqueAq');
-                    const cadastro = document.getElementById('form-cadastro');
 
-                    semCadastro.style.display = 'none';
-                    cadastro.style.display = 'flex';
-                } else {
-                    document.getElementById('criarLoja').style.display = 'flex';
-                }
-            });
+        const btnCadastrar = document.getElementById('cadastrar');
+
+       if (btnCadastrar) {
+    btnCadastrar.addEventListener("click", function () {
+        if (verificarLoja) {
+            document.getElementById('idCliqueAq').style.display = 'none';
+            document.getElementById('form-cadastro').style.display = 'flex';
+        } else {
+            document.getElementById('criarLoja').style.display = 'block';
         }
+    });
+}
+
 //Veirifica se existem produtos
-        const verificarSeTem = <?= isset($produto) ? 'true' : 'false' ?>;
+        const verificarSeTem = <?= $temProdutos? 'true' : 'false' ?>;
         if (verificarSeTem) {
             const categorias = { // Um Dicionario de objeto JS com chaves e valores
                 1: "Eletrônicos",

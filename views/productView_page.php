@@ -170,7 +170,7 @@ if ($stmt->rowCount() > 0) {
                             <div class="ceta">
                                 <form id="id-form-cart-add" action="../cartAddBuy.php" method="POST">
                                     <input type="hidden" name="id_produto" id="modal-id-product-adicionar">
-                                    <button type="button" onclick="verificarUser(event)"><i class='bx bx-cart-add'></i></button> <!-- Chama a função event que verifica se o user esta logado -->
+                                    <button type="submit" onclick="verificarUser(event)"><i class='bx bx-cart-add'></i></button> <!-- Chama a função event que verifica se o user esta logado -->
                                 </form>
                             </div>
                         </div>

@@ -24,7 +24,7 @@ if(isset($_POST['cadastrar_usuario'])) {
             exit();
         }
 
-        if (strlen($cpf) < 15 ) {
+        if (strlen($cpf) < 14 ) {
             $_SESSION['cpf_menor'] = 'Esta faltando numeros no CPF';
             header ('location: views/register_page.php?action=register ');
             exit();

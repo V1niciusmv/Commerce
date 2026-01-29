@@ -2,6 +2,14 @@
 session_start();
 require 'bd/connection.php';
 
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode([
+        'success' => false,
+        'erros' => ['Sessão expirada. Faça login novamente.']
+    ]);
+    exit();
+}
+
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -43,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erros[] = "Descrição é obrigatória";
     }
  
-    if (empty($_SESSION['form_files']['imagem_nome'])) {
-        $erros[] = "Imagem é obrigatória";
-    }
+   if (!isset($_FILES['imagem']) || $_FILES['imagem']['error'] !== UPLOAD_ERR_OK) {
+    $erros[] = "Imagem é obrigatória";
+}
 
     if (!empty($erros)) {
         echo json_encode(['success' => false, 'erros' => $erros]);
@@ -94,20 +102,43 @@ try {
 
     $idProduto = $connection->lastInsertId();
 
-    $imagem = $_FILES['imagem'];
-    $extensao = pathinfo($imagem['name'], PATHINFO_EXTENSION);
+   $imagem = $_FILES['imagem'];
 
-    $nomeArquivo = hash('sha256', uniqid(mt_rand(), true)) . '.' . $extensao;
-    $caminhoUpload = __DIR__ . '/img/img_produto/' . $nomeArquivo;
+// valida extensão
+$extensao = strtolower(pathinfo($imagem['name'], PATHINFO_EXTENSION));
+$extPermitidas = ['jpg', 'jpeg', 'png', 'webp'];
 
-    if (!move_uploaded_file($imagem['tmp_name'], $caminhoUpload)) {
-        echo json_encode(['success' => false, 'erros' =>['Erro ao salvar imagem']]);
-        exit();
-    
-    }
+if (!in_array($extensao, $extPermitidas)) {
+    echo json_encode([
+        'success' => false,
+        'erros' => ['Formato de imagem inválido']
+    ]);
+    exit();
+}
 
-    $urlImagem = 'img/img_produto/' . $nomeArquivo;
-    $tipoImg = 'produto';
+// cria pasta se não existir
+$diretorio = __DIR__ . '/img/img_produto/';
+if (!is_dir($diretorio)) {
+    mkdir($diretorio, 0755, true);
+}
+
+// gera nome único (igual ao da loja)
+$nomeArquivo = uniqid('produto_', true) . '.' . $extensao;
+$caminhoFinal = $diretorio . $nomeArquivo;
+
+// move o arquivo
+if (!move_uploaded_file($imagem['tmp_name'], $caminhoFinal)) {
+    echo json_encode([
+        'success' => false,
+        'erros' => ['Erro ao salvar imagem']
+    ]);
+    exit();
+}
+
+// caminho salvo no banco
+$urlImagem = 'img/img_produto/' . $nomeArquivo;
+
+$tipoImg = 'produto';
 
     $sqlImg = "INSERT INTO imagens (tipo_img, caminho_img, produtos_id_products) 
         VALUES (:tipo_img, :caminho_img, :produtos_id_products)";
@@ -124,8 +155,12 @@ try {
     $_SESSION['produtoCadastrado'] = "Produto cadastrado com sucesso";
     echo json_encode(['success' => true]);
     exit();
-} catch (PDOException $e) {
-    echo "Erro ao realizar cadastro do produto: " . $e->getMessage();
+}  catch (PDOException $e) {
+    echo json_encode([
+        'success' => false,
+        'erros' => ['Erro interno no servidor']
+    ]);
+    exit();
 }
 }
 ?>

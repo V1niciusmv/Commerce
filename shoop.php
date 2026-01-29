@@ -1,25 +1,49 @@
 <?php
 session_start();
 require 'bd/connection.php';
-if (isset($_POST['cadastrar_loja']));
+
+if (isset($_POST['cadastrar_loja'])) {
 
 $_SESSION['register_loja'] = $_POST;
-if (isset($_FILES['imagem']) && $_FILES['imagem']['error'] === UPLOAD_ERR_OK) {
-    $tempDir = __DIR__ . '/temp_uploads/';
-    if (!file_exists($tempDir)) {
-        mkdir($tempDir, 0755, true);
-    }
 
-    $tempFilename = uniqid() . '_' . $_FILES['imagem']['name'];
-    $tempPath = $tempDir . $tempFilename;
-    
-    if (move_uploaded_file($_FILES['imagem']['tmp_name'], $tempPath)) {
-        $_SESSION['register_loja_files'] = [
-            'imagem_nome' => $_FILES['imagem']['name'],
-            'temp_path' => $tempPath
-        ];
-    }
+if (!isset($_FILES['imagem']) || $_FILES['imagem']['error'] !== UPLOAD_ERR_OK) {
+    $_SESSION['restricao_criarLoja'] = "Envie uma imagem válida";
+    header("location: views/shoop_page.php");
+    exit();
 }
+
+$imagem = $_FILES['imagem'];
+
+// valida extensão
+$extensao = strtolower(pathinfo($imagem['name'], PATHINFO_EXTENSION));
+$extPermitidas = ['jpg', 'jpeg', 'png', 'webp'];
+
+if (!in_array($extensao, $extPermitidas)) {
+    $_SESSION['restricao_criarLoja'] = "Formato de imagem inválido";
+    header("location: views/shoop_page.php");
+    exit();
+}
+
+// cria pasta se não existir
+$diretorio = __DIR__ . '/img/img_loja/';
+if (!is_dir($diretorio)) {
+    mkdir($diretorio, 0755, true);
+}
+
+// gera nome único
+$nomeArquivo = uniqid('loja_', true) . '.' . $extensao;
+$caminhoFinal = $diretorio . $nomeArquivo;
+
+// move o arquivo
+if (!move_uploaded_file($imagem['tmp_name'], $caminhoFinal)) {
+    $_SESSION['restricao_criarLoja'] = "Erro ao salvar a imagem";
+    header("location: views/shoop_page.php");
+    exit();
+}
+
+// caminho para salvar no banco
+$urlImagem = 'img/img_loja/' . $nomeArquivo;
+
 
 $nomeLoja = $_POST['nome'];
 $telefoneLoja = $_POST['telefone'];
@@ -51,7 +75,7 @@ try {
     WHERE loja.telefone_loja = :telefone OR (users.telefone_users = :telefone AND users.id_users != :users)";
     $stmtTelefoneLoja = $connection->prepare($sqlTelefoneLoja);
     $stmtTelefoneLoja->bindParam(':telefone', $telefoneLoja);
-    $stmtTelefoneLoja->bindParam(':users', $SESSION['user_id']);
+    $stmtTelefoneLoja->bindParam(':users', $_SESSION['user_id']);
     $stmtTelefoneLoja->execute();
 
     $resultTelefone = $stmtTelefoneLoja->fetchColumn();
@@ -85,49 +109,30 @@ try {
     $stmt->bindParam(':users_id_users', $_SESSION['user_id']);
     $stmt->execute();
 
-    $idLoja = $connection->lastInsertId();
+    if (!$stmt->rowCount()) {
+    die('Erro: loja não foi criada');
+}
+
+$idLoja = $connection->lastInsertId();
+
+if (!$idLoja) {
+    die('Erro: ID da loja inválido');
+}
 
     $imagem = $_FILES['imagem'];
-    $imagemTemp = $_SESSION['register_loja_files']['temp_path'] ?? null;
     
-    if ($imagemTemp && file_exists($imagemTemp)) {
-        $extensao = pathinfo($_SESSION['register_loja_files']['imagem_nome'], PATHINFO_EXTENSION);
-        $nomeArquivo = hash('sha256', uniqid(mt_rand(), true)) . '.' . $extensao;
-        $caminhoUpload = __DIR__ . '/img/img_loja/' . $nomeArquivo;
-        
-        if (!rename($imagemTemp, $caminhoUpload)) {
-            $_SESSION['restricao_criarLoja'] = "Erro ao salvar imagem";
-            header("location: views/shoop_page.php");
-            exit();
-        }
-    } elseif (isset($imagem) && $imagem['error'] === UPLOAD_ERR_OK) {
-        $extensao = pathinfo($imagem['name'], PATHINFO_EXTENSION);
-        $nomeArquivo = hash('sha256', uniqid(mt_rand(), true)) . '.' . $extensao;
-        $caminhoUpload = __DIR__ . '/img/img_loja/' . $nomeArquivo;
-        
-        if (!move_uploaded_file($imagem['tmp_name'], $caminhoUpload)) {
-            $_SESSION['restricao_criarLoja'] = "Erro ao salvar imagem";
-            header("location: views/shoop_page.php");
-            exit();
-        }
-    } else {
-        $_SESSION['restricao_criarLoja'] = "Nenhuma imagem foi enviada";
-        header("location: views/shoop_page.php");
-        exit();
-    }
-
     $urlImagem = 'img/img_loja/' . $nomeArquivo;
-    $tipoImg = 'loja';
 
+$sqlImg = "INSERT INTO imagens (tipo_img, caminho_img, lojas_id_loja)
+           VALUES ('loja', :caminho, :loja)";
 
-    $sqlImg = "INSERT INTO imagens (tipo_img, caminho_img, lojas_id_loja) 
-        VALUES (:tipo_img, :caminho_img, :lojas_id_loja)";
-    $stmtImg = $connection->prepare($sqlImg);
-    $stmtImg->bindParam(':tipo_img', $tipoImg);
-    $stmtImg->bindParam(':caminho_img', $urlImagem);
-    $stmtImg->bindParam(':lojas_id_loja', $idLoja);
-    $stmtImg->execute();
-
+$stmtImg = $connection->prepare($sqlImg);
+$stmtImg->bindValue(':caminho', $urlImagem);
+$stmtImg->bindValue(':loja', $idLoja, PDO::PARAM_INT);
+if (!$stmtImg->execute()) {
+    print_r($stmtImg->errorInfo());
+    exit;
+}
     unset($_SESSION['register_loja']);
     unset($_SESSION['register_loja_files']);
     $_SESSION['cadastroLoja_sucesso'] = "Loja criada com sucesso";
@@ -135,5 +140,6 @@ try {
     exit();
 } catch (PDOException $e) {
     echo "Erro ao realizar cadastro da loja: " . $e->getMessage();
+}
 }
 ?>
